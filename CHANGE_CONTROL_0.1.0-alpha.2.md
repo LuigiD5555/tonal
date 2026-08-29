@@ -1,7 +1,7 @@
 # Change control — Tonal 0.1.0-alpha.2
 
 Date: 2026-08-28  
-Status: `CANDIDATE_PROJECT_SKILL_DISTRIBUTION_R0`
+Status: `PROMOTED_PROJECT_SKILL_DISTRIBUTION_R0`
 
 ## Component changed
 
@@ -30,15 +30,17 @@ The existing Tlaloc copy of `repo-flow` is not deleted by this release; cross-re
 
 ## Verification gates
 
-- `VERSION`, `TONAL.json` and `tonal.lock` coherence;
-- JSON/schema/commit-format validation;
-- canonical `repo-flow` vs `.claude` mirror equality;
-- canonical `repo-flow` vs `.agents` mirror equality;
-- project install/idempotence/local-edit/`--force` regression test;
-- exact Tlaloc/Origami checkout and component `VERSION` verification;
-- `go test ./...` and `go vet ./...` for Origami;
-- `go test ./...` and `go vet ./...` for Tlaloc Behavior Lab;
-- no external model campaign.
+- `VERSION`, `TONAL.json` and `tonal.lock` coherence — PASS;
+- JSON/schema/commit-format validation — PASS;
+- canonical `repo-flow` vs `.claude` mirror equality — PASS;
+- canonical `repo-flow` vs `.agents` mirror equality — PASS;
+- project install/idempotence/local-edit/`--force` regression test — PASS;
+- exact Tlaloc/Origami checkout and component `VERSION` verification — PASS;
+- `go test ./...` and `go vet ./...` for Origami — PASS;
+- `go test ./...` and `go vet ./...` for Tlaloc Behavior Lab — PASS;
+- no external model campaign — preserved.
+
+GitHub Actions run `33227119899` completed successfully for pull request #2 before promotion.
 
 ## Regression risk
 
@@ -50,4 +52,4 @@ Future Tonal snapshots can include one project-agnostic repository workflow sour
 
 ## Promotion decision
 
-Promote only after the pull-request CI verifies the exact locked components and all Tonal skill/coherence gates.
+Promoted after all declared Tonal and locked-component gates passed on the exact pull-request composition.
