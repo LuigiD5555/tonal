@@ -20,6 +20,8 @@ jobs:
         run: scripts/fetch-components.sh
       - name: Verify component identities
         run: scripts/verify-components.sh
+      - name: Verify cross-repository ownership boundaries
+        run: tests/test-ownership.sh
       - uses: actions/setup-go@v5
         with:
           go-version: 'stable'
