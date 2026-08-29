@@ -1,0 +1,21 @@
+{
+  "schema": "tonal.gatekeeper.r0",
+  "owner": "LuigiD5555",
+  "applies_to": ["LuigiD5555/tonal", "LuigiD5555/tlaloc", "LuigiD5555/origami"],
+  "policy": {
+    "OWNER": {
+      "requirements": ["component_ci", "integrity", "compatibility"],
+      "may_explicitly_override_promotion_gate": true,
+      "override_must_be_intentional": true
+    },
+    "EXTERNAL": {
+      "requirements": ["component_ci", "integrity", "compatibility", "owner_approval"],
+      "may_explicitly_override_promotion_gate": false,
+      "auto_promotion": false
+    }
+  },
+  "classification": {
+    "owner": "PR author is LuigiD5555 and the PR head repository is the canonical repository",
+    "external": "all other pull-request provenance"
+  }
+}
