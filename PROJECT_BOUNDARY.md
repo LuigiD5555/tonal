@@ -1,37 +1,39 @@
 # Tonal project boundary
 
-Tonal composes independently versioned projects without taking ownership of their semantics.
+The complete project is organized as three independently versioned repositories. **Tonal is the composition root**, while Tlaloc and Origami remain authoritative for their own semantics.
 
 ```text
-TONAL
-composition / lock / compatibility / integrity / distribution
+TONAL — composition root
+composition / lock / compatibility / integrity / distribution / repo-flow
     |
-    +-- TLALOC
-    |   work orchestration / behavior compilation / Tlaloque / verification
+    +-- TLALOC — behavior and execution authority
+    |   behavior compilation / swarm training / orchestration / Tlaloque / verification
     |
-    +-- ORIGAMI
-        representation / state machine / dynamics / perceptual contracts
+    +-- ORIGAMI — representation and machine authority
+        visual/computational language / state machines / dynamics / evidence
         |
         +-- OHF
             nested carrier/laboratory research track
 ```
 
-## Tonal owns
+## Repository contract
 
-- exact component resolution;
-- compatibility declarations;
-- reproducible composition metadata;
-- integrity verification;
-- snapshot/release assembly;
-- stack-level installation/distribution policy once implemented;
-- distribution and synchronization of project-agnostic stack workflow assets such as `repo-flow`.
+| Repository | Owns | Must not own |
+| --- | --- | --- |
+| Tonal | exact component pins, compatibility, stack integrity, reproducible distribution, project-agnostic `repo-flow`, snapshots/releases | Tlaloc behavior semantics or Origami machine semantics |
+| Tlaloc | BehaviorSpec/PromptIR behavior compilation, swarm orchestration/training, verification, Tlaloque execution, Tlaloc-specific skills | canonical `repo-flow`, Origami representation/state semantics |
+| Origami | representation, state-machine laws, dynamics, perceptual contracts, deterministic experiment/reference evidence, OHF research track | Tlaloc orchestration/training semantics or stack composition policy |
 
-## Tonal does not own
+## Promotion rule
 
-- BehaviorSpec, PromptIR or Tlaloque semantics;
-- Origami state laws, perceptual-channel semantics or machine semantics;
-- OHF experimental claims;
-- component source history;
-- component-specific skills or workflow rules owned by Tlaloc or Origami.
+A component repository develops and tests independently. Tonal only promotes a component after the component's required gates are green, then records its **exact immutable commit** in `TONAL.json` and `tonal.lock`. Floating branch names are never a released composition.
 
-A Tonal snapshot is a distribution artifact, not a new source of truth for its components. Tonal's project-agnostic workflow assets likewise must not redefine component semantics.
+Changing one component does not automatically change the version of another component. Tonal receives its own version bump when the resolved stack, compatibility contract, distribution behavior, or release metadata changes.
+
+## Workflow authority
+
+`skills/repo-flow/SKILL.md` in Tonal is the canonical project-agnostic repository workflow. Tonal synchronizes its `.claude/skills/` and `.agents/skills/` mirrors. Tlaloc and Origami may own component-specific workflows, but must not fork the canonical project-agnostic `repo-flow` semantics.
+
+## Snapshot boundary
+
+A future Tonal snapshot is an immutable distribution artifact assembled from the exact locked component commits. It is not a monorepo and never becomes a new source of truth for Tlaloc or Origami.

@@ -4,32 +4,31 @@ on:
   pull_request:
   push:
     branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  composition:
+  stack:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Verify Tonal manifest and lock
-        run: |
-          chmod +x scripts/*.sh tests/*.sh
-          tests/test-manifest.sh
-      - name: Verify project skill mirrors and installer
-        run: tests/test-skills.sh
-      - name: Fetch exact locked components
-        run: scripts/fetch-components.sh
-      - name: Verify component identities
-        run: scripts/verify-components.sh
       - uses: actions/setup-go@v5
         with:
           go-version: 'stable'
-      - name: Verify Origami deterministic Go closure
-        working-directory: .work/components/origami
+      - name: Verify complete locked stack
         run: |
-          go test ./...
-          go vet ./...
-      - name: Verify Tlaloc Behavior Lab deterministic Go closure
-        working-directory: .work/components/tlaloc/behavior-lab
-        run: |
-          go test ./...
-          go vet ./...
+          chmod +x scripts/*.sh tests/*.sh
+          scripts/verify-stack.sh
+      - name: Build reproducible source snapshot
+        run: scripts/build-snapshot.sh
+      - name: Upload stack snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: tonal-stack-snapshot
+          path: |
+            dist/*.tar.gz
+            dist/*.sha256
+          if-no-files-found: error
+          retention-days: 30

@@ -1,5 +1,17 @@
 # Tonal changelog
 
+## 0.1.0-alpha.3 — Stack Definition R0
+
+- formalizes the complete project as three independently versioned repositories with Tonal as composition root;
+- defines Tlaloc as behavior/orchestration/training/verification and Tlaloque execution authority;
+- defines Origami as representation/state-machine/dynamics/evidence authority, with OHF remaining a nested research track;
+- establishes Tonal as the single authority for project-agnostic `repo-flow` and stack composition/distribution policy;
+- locks Tlaloc `6.0.0-alpha.10` at `a20ab61d0043bc3e0a166f67207b01bdb2678a78`;
+- locks Origami `6.0.0-alpha.3` at `bd6e47979fcc8918cefe1302bd34e183d784a14a`, including the deterministic Reference Engine R0 and automated evidence gate;
+- requires component CI success before a component commit is promoted into Tonal;
+- preserves independent component versioning and exact immutable commit composition;
+- leaves physical snapshot packaging as the next automation layer rather than claiming an artifact that is not yet implemented.
+
 ## 0.1.0-alpha.2 — Project Skill Distribution R0
 
 - adds canonical `skills/repo-flow/SKILL.md` for project-agnostic Git/GitHub workflow discipline;
