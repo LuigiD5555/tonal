@@ -1,32 +1,43 @@
 {
   "schema": "tonal.composition.v1",
   "tonal": {
-    "version": "0.1.0-alpha.2",
+    "version": "0.1.0-alpha.3",
     "status": "EXPERIMENTAL_COMPOSITION_CONTRACT",
-    "role": "reproducible composition and distribution layer"
+    "role": "reproducible composition, distribution, integration and release layer"
+  },
+  "project": {
+    "name": "Tonal",
+    "architecture": "three independently versioned repositories composed by exact immutable commits",
+    "entrypoint": "tonal"
   },
   "components": {
     "tlaloc": {
-      "version": "6.0.0-alpha.9",
+      "version": "6.0.0-alpha.10",
       "repository": "https://github.com/LuigiD5555/tlaloc.git",
-      "commit": "6700b3bd9371a69ecc92a3f7bf95643d91f0f4ef",
+      "commit": "a20ab61d0043bc3e0a166f67207b01bdb2678a78",
+      "authority": "behavior compilation, swarm orchestration, training, verification and Tlaloque execution",
       "role": "work/orchestration system"
     },
     "origami": {
       "version": "6.0.0-alpha.3",
       "repository": "https://github.com/LuigiD5555/origami.git",
-      "commit": "978feef7f286cfe18b312ab8c833569094f12ef7",
+      "commit": "bd6e47979fcc8918cefe1302bd34e183d784a14a",
+      "authority": "representation, visual/computational language, state machines and deterministic experimental evidence",
       "role": "visual/computational representation and state-machine language"
     }
   },
+  "ownership": {
+    "repo_flow": "tonal",
+    "component_semantics": "owned only by each component repository",
+    "composition_contract": "tonal"
+  },
   "contracts": {
-    "origami": [
-      "origami.perceptual-channels.r0"
-    ],
+    "origami": ["origami.perceptual-channels.r0", "origami.reference-evidence.r0"],
     "notes": [
-      "Origami 6.0.0-alpha.3 preserves the perceptual-channel contract introduced in alpha.2.",
-      "Tlaloc 6.0.0-alpha.9 remains contract-aware and adds the reusable repo-flow project skill without changing Origami runtime support.",
-      "Tonal carries the canonical stack-distribution copy of repo-flow and verified .claude/.agents mirrors."
+      "Tlaloc and Origami remain independently versioned and authoritative for their own semantics.",
+      "Tonal is the single authority for project-agnostic repo-flow distribution and stack composition.",
+      "Origami reference experiments are evidence-driven and their CI gate must remain green before Tonal promotes a new Origami commit.",
+      "A Tonal composition promotes exact commits, never floating branches."
     ]
   },
   "invariants": [
@@ -35,10 +46,12 @@
     "TONAL_DOES_NOT_OWN_COMPONENT_SEMANTICS",
     "LOCKFILE_IMMUTABLE_AFTER_RELEASE",
     "UNSUPPORTED_COMPONENT_CAPABILITY_MUST_NOT_BE_PROMOTED_BY_COMPOSITION",
-    "REPO_FLOW_MIRRORS_MATCH_CANONICAL"
+    "REPO_FLOW_SINGLE_AUTHORITY_IS_TONAL",
+    "REPO_FLOW_MIRRORS_MATCH_CANONICAL",
+    "COMPONENT_CI_MUST_PASS_BEFORE_PROMOTION"
   ],
   "snapshot": {
     "physical_artifact": "NOT_YET_RELEASED",
-    "builder_status": "PLANNED_NEXT_LAYER"
+    "builder_status": "NEXT_AUTOMATION_LAYER"
   }
 }
