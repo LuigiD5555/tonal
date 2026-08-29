@@ -1,87 +1,63 @@
-# Tonal 0.1.0-alpha.2
+# Tonal 0.1.0-alpha.3
 
-Tonal is the **reproducible composition and distribution layer** for independently versioned Tlaloc and Origami releases.
+Tonal is the **composition, compatibility, evidence and distribution layer** for independently versioned Tlaloc and Origami.
 
-Tonal does not own Tlaloc behavior semantics or Origami representation semantics. It resolves exact component revisions, verifies compatibility and integrity, carries stack-level project tooling, and is the place from which physical stack snapshots/releases are built.
+Tonal does not own Tlaloc behavior semantics or Origami representation semantics. Component repositories remain authoritative; Tonal records immutable compatible combinations and builds reproducible stack snapshots from them.
 
 ## Current composition
 
 | Component | Version | Exact revision |
 |---|---|---|
-| Tlaloc | `6.0.0-alpha.9` | `6700b3bd9371a69ecc92a3f7bf95643d91f0f4ef` |
-| Origami | `6.0.0-alpha.3` | `978feef7f286cfe18b312ab8c833569094f12ef7` |
-
-The component repositories remain authoritative. Tonal pins immutable commits; it does not vendor or fork their source trees.
+| Tlaloc | `6.0.0-alpha.10` | `a20ab61d0043bc3e0a166f67207b01bdb2678a78` |
+| Origami | `6.0.0-alpha.3` | `bd6e47979fcc8918cefe1302bd34e183d784a14a` |
 
 ## Repository roles
 
 ```text
-LuigiD5555/tlaloc   -> work/orchestration system
-LuigiD5555/origami  -> representation/state-machine language
-LuigiD5555/tonal    -> composition, compatibility, reproducibility and distribution
+LuigiD5555/tlaloc   -> behavior compilation, orchestration, training, verification, Tlaloque
+LuigiD5555/origami  -> representation, state machines, dynamics, observation contracts, OHF research
+LuigiD5555/tonal    -> exact composition, compatibility evidence, shared workflow and distribution
 ```
 
-Within Tlaloc, Tlaloque are bounded specialist agents. Within Origami, OHF/R3.10-LAB is a nested research track rather than the identity of the entire language.
-
-## Cross-project skills
-
-Tonal carries the project-agnostic `repo-flow` workflow skill as a stack-distribution asset.
-
-The source of truth is:
+## Normal propagation flow
 
 ```text
-skills/repo-flow/SKILL.md
+component change
+      |
+      v
+Tlaloc or Origami CI
+      |
+      v
+promoted component commit
+      |
+      v
+Tonal pin update
+      |
+      v
+full-stack verification + evidence
+      |
+      v
+reproducible snapshot
 ```
 
-The repository also keeps byte-identical mirrors for common agent layouts:
-
-```text
-.claude/skills/repo-flow/SKILL.md
-.agents/skills/repo-flow/SKILL.md
-```
-
-Update the canonical copy and run:
+Useful commands:
 
 ```bash
-./scripts/sync-skills.sh
-./tests/test-skills.sh
+./scripts/component-status.sh
+./scripts/update-component.sh origami main
+./scripts/update-component.sh tlaloc main
+./scripts/verify-stack.sh
+./scripts/build-snapshot.sh
 ```
 
-To install the skill into both layouts of another Git project:
+`component-status.sh` detects drift between the Tonal lock and component `main` branches. `update-component.sh` resolves a requested revision to an immutable commit and updates both `TONAL.json` and `tonal.lock`. `verify-stack.sh` fetches the exact commits and runs component tests, vet and Origami deterministic evidence gates. `build-snapshot.sh` creates a normalized source archive plus SHA-256 checksum.
 
-```bash
-./scripts/install-skill.sh repo-flow --project /path/to/project
-```
+## Shared project workflow
 
-Existing differing copies are protected; use `--force` only after reviewing the local changes.
+Tonal is the sole authority for the project-agnostic `repo-flow` skill. The canonical source is `skills/repo-flow/SKILL.md`; `.claude/skills/` and `.agents/skills/` are verified mirrors. Run `scripts/sync-skills.sh` after editing the canonical skill and `scripts/install-skill.sh repo-flow --project /path/to/project` to distribute it safely.
 
-## Files
+## Promotion rule
 
-- `TONAL.json` — human/machine-readable composition policy and ownership contract.
-- `tonal.lock` — exact resolved component revisions for this Tonal release.
-- `VERSION` — Tonal's independent version.
-- `skills/` — canonical stack-level project skills.
-- `.claude/skills/` — verified Claude-compatible mirrors.
-- `.agents/skills/` — verified agent-compatible mirrors.
-- `scripts/sync-skills.sh` — regenerates skill mirrors from canonical sources.
-- `scripts/install-skill.sh` — safely copies a Tonal skill into both supported project layouts.
-- `scripts/verify-lock.sh` — verifies manifest/lock/version coherence.
-- `scripts/fetch-components.sh` — fetches the exact locked commits into a temporary workspace.
-- `scripts/verify-components.sh` — verifies fetched commit and component `VERSION` identities.
-- `.github/workflows/verify.yml` — composition and skill-coherence CI without external model campaigns.
+A component change is not part of a Tonal stack merely because it exists on component `main`. It becomes part of the stack only when a new exact pin passes the complete Tonal verification closure. Released lock files are immutable; later component changes require a new Tonal version/lock.
 
-## Development flow
-
-Tonal releases are assembled from tested commits that already exist in the independent component repositories:
-
-```text
-Tlaloc main ---- exact commit ---\
-                                 +--> Tonal lock --> verification --> snapshot/release
-Origami main --- exact commit ---/
-```
-
-A released `tonal.lock` is immutable. To change one component, create a new Tonal version and a new lock resolution.
-
-## Snapshot status
-
-`0.1.0-alpha.2` adds **Project Skill Distribution R0** on top of the Composition Contract R0. Physical binary/source snapshot packaging and GitHub Release publication remain the next layer; this release does not claim a final portable stack installer yet.
+GitHub Actions runs the same stack verification automatically on pull requests and `main`, builds the source snapshot, and retains the snapshot and checksum as workflow artifacts.
