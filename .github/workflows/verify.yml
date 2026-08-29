@@ -1,0 +1,33 @@
+name: verify
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  composition:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Tonal manifest and lock
+        run: |
+          chmod +x scripts/*.sh tests/*.sh
+          tests/test-manifest.sh
+      - name: Fetch exact locked components
+        run: scripts/fetch-components.sh
+      - name: Verify component identities
+        run: scripts/verify-components.sh
+      - uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+      - name: Verify Origami deterministic Go closure
+        working-directory: .work/components/origami
+        run: |
+          go test ./...
+          go vet ./...
+      - name: Verify Tlaloc Behavior Lab deterministic Go closure
+        working-directory: .work/components/tlaloc/behavior-lab
+        run: |
+          go test ./...
+          go vet ./...
