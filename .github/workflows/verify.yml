@@ -14,6 +14,8 @@ jobs:
         run: |
           chmod +x scripts/*.sh tests/*.sh
           tests/test-manifest.sh
+      - name: Verify project skill mirrors and installer
+        run: tests/test-skills.sh
       - name: Fetch exact locked components
         run: scripts/fetch-components.sh
       - name: Verify component identities

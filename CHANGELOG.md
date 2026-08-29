@@ -1,5 +1,15 @@
 # Tonal changelog
 
+## 0.1.0-alpha.2 — Project Skill Distribution R0
+
+- adds canonical `skills/repo-flow/SKILL.md` for project-agnostic Git/GitHub workflow discipline;
+- adds byte-identical `.claude/skills/repo-flow/` and `.agents/skills/repo-flow/` mirrors;
+- adds mirror synchronization and regression gates so agent-specific copies cannot silently drift;
+- adds safe project installation into both supported layouts with local-edit protection and explicit `--force`;
+- updates the tested Tonal composition to Tlaloc `6.0.0-alpha.9` at `6700b3bd9371a69ecc92a3f7bf95643d91f0f4ef`;
+- keeps Origami `6.0.0-alpha.3` pinned at `978feef7f286cfe18b312ab8c833569094f12ef7`;
+- does not change Tlaloc or Origami semantic ownership and still does not claim a physical stack snapshot artifact.
+
 ## 0.1.0-alpha.1 — Composition Contract R0
 
 - establishes Tonal as the composition/distribution layer above independently versioned Tlaloc and Origami repositories;
