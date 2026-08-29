@@ -1,0 +1,17 @@
+{
+  "schema": "tonal.lock.v1",
+  "tonal_version": "0.1.0-alpha.1",
+  "resolved_at": "2026-08-28",
+  "components": {
+    "tlaloc": {
+      "version": "6.0.0-alpha.8",
+      "repository": "https://github.com/LuigiD5555/tlaloc.git",
+      "commit": "b222d8bef92a3da2a1753731d351cbe545ff7805"
+    },
+    "origami": {
+      "version": "6.0.0-alpha.3",
+      "repository": "https://github.com/LuigiD5555/origami.git",
+      "commit": "978feef7f286cfe18b312ab8c833569094f12ef7"
+    }
+  }
+}
