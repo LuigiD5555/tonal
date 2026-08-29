@@ -8,6 +8,7 @@ root = pathlib.Path(sys.argv[1])
 m = json.loads((root / "TONAL.json").read_text())
 assert "COMPONENT_REPOSITORIES_REMAIN_AUTHORITATIVE" in m["invariants"]
 assert "SNAPSHOT_REFERENCES_EXACT_COMMITS" in m["invariants"]
-assert m["snapshot"]["physical_artifact"] == "NOT_YET_RELEASED"
+assert m["snapshot"]["physical_artifact"] == "BUILT_BY_VERIFY_WORKFLOW"
+assert m["snapshot"]["builder_status"] == "IMPLEMENTED"
 print("PASS composition invariants")
 PY
