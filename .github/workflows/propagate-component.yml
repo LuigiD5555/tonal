@@ -1,0 +1,54 @@
+name: propagate-component
+
+on:
+  workflow_dispatch:
+    inputs:
+      component:
+        description: Component to propagate
+        required: true
+        type: choice
+        options: [tlaloc, origami]
+      revision:
+        description: Branch, tag or commit to pin
+        required: true
+        default: main
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  propagate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - name: Resolve and update exact component pin
+        run: |
+          chmod +x scripts/*.sh tests/*.sh
+          scripts/update-component.sh '${{ inputs.component }}' '${{ inputs.revision }}'
+      - name: Verify proposed stack
+        run: scripts/verify-stack.sh
+      - name: Create propagation pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          COMPONENT: ${{ inputs.component }}
+          REVISION: ${{ inputs.revision }}
+        run: |
+          if git diff --quiet; then
+            echo 'No lock change required.'
+            exit 0
+          fi
+          branch="propagate/${COMPONENT}-$(date -u +%Y%m%d%H%M%S)"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch -c "$branch"
+          git add TONAL.json tonal.lock
+          git commit -m "chore(stack): propagate ${COMPONENT} ${REVISION}"
+          git push origin "$branch"
+          gh pr create --base main --head "$branch" --title "chore(stack): propagate ${COMPONENT}" --body "Automated Tonal propagation. Exact component pin was resolved, the complete locked stack verification passed, and this PR records the proposed composition change. Merge remains the promotion boundary."
