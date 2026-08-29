@@ -2,14 +2,17 @@
   "schema": "tonal.composition-proposal.r0",
   "id": "hybrid-receiver-r0",
   "state": "PROPOSED_NOT_PINNED",
-  "purpose": "Coordinate promotion of the Origami self-boot Hybrid Receiver with Tlaloc receiver distillation without weakening independent component authority.",
+  "purpose": "Coordinate promotion of the Origami self-boot/image-backed Hybrid Receiver with Tlaloc receiver distillation and model-tool execution without weakening independent component authority.",
   "required_contracts": {
     "origami": [
       "origami.hybrid-receiver.r0",
-      "origami.receiver-artifact.r0"
+      "origami.receiver-artifact.r0",
+      "origami.hybrid-carrier.r0",
+      "origami.model-packet.r0"
     ],
     "tlaloc": [
-      "tlaloc.origami-receiver-distillation.r0"
+      "tlaloc.origami-receiver-distillation.r0",
+      "tlaloc.origami-hybrid-artifact-set.r0"
     ]
   },
   "responsibilities": {
@@ -18,7 +21,8 @@
       "BOOT/ROSETTA/PROGRAM receiver contract",
       "carrier-local symbol semantics",
       "deterministic micro-agent execution",
-      "carrier generation/runtime",
+      "self-contained carrier generation and PNG decoding",
+      "image-backed bounded runtime tools",
       "receiver artifact registry and promotion validation"
     ],
     "tlaloc": [
@@ -26,6 +30,7 @@
       "receiver prompt candidate improvement",
       "swarm-trace distillation into micro-agent candidates",
       "candidate tournament and cross-model evaluation",
+      "OpenAI-compatible multimodal model-tool coordination",
       "promotion recommendation"
     ],
     "tonal": [
@@ -35,22 +40,37 @@
       "record stack-level compatibility state"
     ]
   },
-  "required_gates_before_lock_update": [
-    "origami_go_test",
-    "origami_go_vet",
+  "implemented_deterministic_gates": [
     "origami_receiver_symbol_permutation",
     "origami_receiver_unknown_fail_closed",
     "origami_hybrid_bundle_isolation",
-    "tlaloc_behavior_lab_go_test",
-    "tlaloc_behavior_lab_go_vet",
+    "origami_carrier_payload_roundtrip",
+    "origami_carrier_png_self_decode",
+    "origami_carrier_memory_commitment",
+    "origami_carrier_png_le_500kb",
+    "origami_image_backed_runtime",
+    "origami_missing_lookup_unknown_without_semantic_global_scan",
     "tlaloc_receiver_distillation_determinism",
     "tlaloc_receiver_tournament_false_exact_zero",
     "tlaloc_receiver_tournament_no_contamination",
-    "peak_active_token_eq_lte_4000",
-    "synthetic_hybrid_end_to_end",
+    "tlaloc_openai_compatible_multimodal_tool_loop_mock"
+  ],
+  "required_gates_before_lock_update": [
+    "origami_go_test",
+    "origami_go_vet",
+    "origami_hybrid_cli_build",
+    "tlaloc_behavior_lab_go_test",
+    "tlaloc_behavior_lab_go_vet",
+    "peak_active_token_eq_lte_4000_on_model_facing_campaign",
+    "synthetic_hybrid_end_to_end_with_real_target_model",
+    "carrier_local_symbol_permutation_with_fixed_master_prompt",
     "cross_model_symbol_permutation",
+    "no_hidden_private_source_or_envelope_on_answering_side",
+    "false_exact_equals_zero",
+    "receiver_artifact_promoted_by_origami",
     "component_prs_merged_to_immutable_commits"
   ],
+  "evidence_boundary": "Deterministic carrier/runtime and mock OpenAI-compatible tool-loop tests prove implementation mechanics only. They do not satisfy real VLM BOOT/Rosetta readability, held-out Hybrid correctness, symbol-permutation or cross-model promotion gates.",
   "lock_rule": "Do not modify tonal.lock to point at feature branches. Update tonal.lock only after promoted Origami and Tlaloc commits exist and all required composition gates are satisfied.",
   "supported_claim": false
 }
