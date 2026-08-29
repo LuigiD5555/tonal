@@ -3,6 +3,7 @@ set -euo pipefail
 chmod +x scripts/*.sh tests/*.sh
 tests/test-manifest.sh
 tests/test-skills.sh
+tests/test-gatekeeper.sh
 scripts/fetch-components.sh
 scripts/verify-components.sh
 (
