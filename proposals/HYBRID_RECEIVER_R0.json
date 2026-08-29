@@ -1,19 +1,25 @@
 {
   "schema": "tonal.composition-proposal.r0",
   "id": "hybrid-receiver-r0",
-  "state": "PROPOSED_NOT_PINNED",
-  "purpose": "Coordinate promotion of the Origami self-boot/image-backed Hybrid Receiver with Tlaloc receiver distillation and model-tool execution without weakening independent component authority.",
-  "required_contracts": {
-    "origami": [
-      "origami.hybrid-receiver.r0",
-      "origami.receiver-artifact.r0",
-      "origami.hybrid-carrier.r0",
-      "origami.model-packet.r0"
-    ],
-    "tlaloc": [
-      "tlaloc.origami-receiver-distillation.r0",
-      "tlaloc.origami-hybrid-artifact-set.r0"
-    ]
+  "state": "COMPONENTS_MERGED_PENDING_MODEL_EVIDENCE",
+  "purpose": "Coordinate the merged Origami self-boot/image-backed Hybrid Receiver with merged Tlaloc receiver distillation and model-tool execution without weakening independent component authority.",
+  "components": {
+    "tlaloc": {
+      "merged_commit": "625a254748fab43af29e4f3d44b5a7d2e3979ae2",
+      "contracts": [
+        "tlaloc.origami-receiver-distillation.r0",
+        "tlaloc.origami-hybrid-artifact-set.r0"
+      ]
+    },
+    "origami": {
+      "merged_commit": "f18f0449320d676588d25c135c5c348fb32370d2",
+      "contracts": [
+        "origami.hybrid-receiver.r0",
+        "origami.receiver-artifact.r0",
+        "origami.hybrid-carrier.r0",
+        "origami.model-packet.r0"
+      ]
+    }
   },
   "responsibilities": {
     "origami": [
@@ -34,7 +40,7 @@
       "promotion recommendation"
     ],
     "tonal": [
-      "pin exact immutable component commits only after component promotion",
+      "record exact immutable component commits",
       "verify cross-component contract identities",
       "run composition gates",
       "record stack-level compatibility state"
@@ -53,24 +59,19 @@
     "tlaloc_receiver_distillation_determinism",
     "tlaloc_receiver_tournament_false_exact_zero",
     "tlaloc_receiver_tournament_no_contamination",
-    "tlaloc_openai_compatible_multimodal_tool_loop_mock"
+    "tlaloc_openai_compatible_multimodal_tool_loop_mock",
+    "component_prs_merged_to_immutable_commits"
   ],
-  "required_gates_before_lock_update": [
-    "origami_go_test",
-    "origami_go_vet",
-    "origami_hybrid_cli_build",
-    "tlaloc_behavior_lab_go_test",
-    "tlaloc_behavior_lab_go_vet",
+  "remaining_gates_before_lock_update": [
     "peak_active_token_eq_lte_4000_on_model_facing_campaign",
     "synthetic_hybrid_end_to_end_with_real_target_model",
     "carrier_local_symbol_permutation_with_fixed_master_prompt",
     "cross_model_symbol_permutation",
     "no_hidden_private_source_or_envelope_on_answering_side",
     "false_exact_equals_zero",
-    "receiver_artifact_promoted_by_origami",
-    "component_prs_merged_to_immutable_commits"
+    "receiver_artifact_promoted_by_origami"
   ],
-  "evidence_boundary": "Deterministic carrier/runtime and mock OpenAI-compatible tool-loop tests prove implementation mechanics only. They do not satisfy real VLM BOOT/Rosetta readability, held-out Hybrid correctness, symbol-permutation or cross-model promotion gates.",
-  "lock_rule": "Do not modify tonal.lock to point at feature branches. Update tonal.lock only after promoted Origami and Tlaloc commits exist and all required composition gates are satisfied.",
+  "evidence_boundary": "Deterministic carrier/runtime and mock OpenAI-compatible tool-loop tests prove implementation mechanics only. Real VLM BOOT/Rosetta readability, held-out Hybrid correctness, symbol-permutation and cross-model evidence remain empirical gates.",
+  "lock_rule": "Keep tonal.lock on the previously promoted stack until the remaining real-model gates pass. The merged component SHAs above are the candidate Hybrid composition.",
   "supported_claim": false
 }
