@@ -54,10 +54,30 @@ Useful commands:
 
 ## Shared project workflow
 
-Tonal is the sole authority for the project-agnostic `repo-flow` skill. The canonical source is `skills/repo-flow/SKILL.md`; `.claude/skills/` and `.agents/skills/` are verified mirrors. Run `scripts/sync-skills.sh` after editing the canonical skill and `scripts/install-skill.sh repo-flow --project /path/to/project` to distribute it safely.
+Tonal is the sole authority for project-agnostic workflow skills. Canonical skills live under `skills/`; `.claude/skills/` and `.agents/skills/` are verified mirrors. Run `scripts/sync-skills.sh` after editing a canonical skill and `scripts/install-skill.sh <name> --project /path/to/project` to distribute it safely.
+
+- `repo-flow` handles Git/GitHub change, CI, merge and multi-repository composition.
+- `gatekeeper` handles provenance and promotion authority across Tonal, Tlaloc and Origami.
+
+## Project Gatekeeper
+
+The same provenance rule applies to all three repositories. `gatekeeper.json` and `GATEKEEPER.md` are canonical here; component repositories contain local mirrors for CI.
+
+```text
+OWNER = LuigiD5555 + canonical repository PR
+  -> technical gates still run
+  -> explicit owner override is permitted
+
+EXTERNAL = every other PR provenance
+  -> technical gates still run
+  -> APPROVED review from LuigiD5555 is mandatory
+  -> no override / no auto-promotion
+```
+
+The distinction controls **promotion authority**, not whether code is presumed correct. See `GATEKEEPER.md` and the `gatekeeper` skill for the operational procedure.
 
 ## Promotion rule
 
 A component change is not part of a Tonal stack merely because it exists on component `main`. It becomes part of the stack only when a new exact pin passes the complete Tonal verification closure. Released lock files are immutable; later component changes require a new Tonal version/lock.
 
-GitHub Actions runs the same stack verification automatically on pull requests and `main`, builds the source snapshot, and retains the snapshot and checksum as workflow artifacts.
+GitHub Actions runs stack verification and provenance classification automatically. For hard multi-user enforcement, configure repository rules to require both normal CI and `gatekeeper / provenance`; administrators can otherwise intentionally bypass workflow results.
