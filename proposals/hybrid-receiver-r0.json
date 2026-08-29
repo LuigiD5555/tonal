@@ -1,40 +1,41 @@
 {
   "schema": "tonal.compatibility-proposal.r0",
   "id": "hybrid-receiver-r0",
-  "status": "PROPOSED_NOT_PINNED",
+  "status": "COMPONENTS_MERGED_PENDING_MODEL_EVIDENCE",
   "components": {
     "tlaloc": {
-      "branch": "feature/origami-hybrid-receiver-r0",
+      "commit": "625a254748fab43af29e4f3d44b5a7d2e3979ae2",
       "contracts": [
         "tlaloc.origami-receiver-distillation.r0",
         "tlaloc.origami-hybrid-artifact-set.r0"
       ],
-      "role": "swarm discovery, candidate improvement, distillation and tournament"
+      "role": "swarm discovery, candidate improvement, distillation, tournament and model-tool coordination"
     },
     "origami": {
-      "branch": "feature/dependency-folding-r0",
+      "commit": "f18f0449320d676588d25c135c5c348fb32370d2",
       "contracts": [
         "origami.hybrid-receiver.r0",
         "origami.tlaloc-hybrid-import.r0",
-        "origami.receiver-artifact.r0"
+        "origami.receiver-artifact.r0",
+        "origami.hybrid-carrier.r0"
       ],
-      "role": "carrier semantics, self-boot, local Rosetta binding, deterministic micro-runtime, memory, verification and artifact registry"
+      "role": "carrier semantics, self-boot, local Rosetta binding, deterministic micro-runtime, image-backed memory, verification and artifact registry"
     }
   },
   "primary_mode": "hybrid",
   "diagnostic_modes": ["native", "computational"],
-  "required_sequence": [
-    "TLALOC_SWARM_DISCOVERY",
-    "TLALOC_DISTILLATION",
-    "TLALOC_TOURNAMENT",
-    "ORIGAMI_IMPORT",
-    "ORIGAMI_CARRIER_LOCAL_BINDING",
-    "ORIGAMI_BOOT_ROSETTA_PROGRAM_INDEX_MEMORY_VERIFICATION_BUILD",
-    "ISOLATED_MODEL_TEST",
-    "SYMBOL_PERMUTATION_TEST",
+  "completed_sequence": [
+    "TLALOC_DISTILLATION_IMPLEMENTED",
+    "ORIGAMI_IMPORT_BOUNDARY_IMPLEMENTED",
+    "ORIGAMI_BOOT_ROSETTA_PROGRAM_INDEX_MEMORY_VERIFICATION_IMPLEMENTED",
+    "COMPONENT_MERGES"
+  ],
+  "pending_sequence": [
+    "ISOLATED_REAL_MODEL_TEST",
+    "SYMBOL_PERMUTATION_REAL_MODEL_TEST",
+    "CROSS_MODEL_REPLICATION",
     "ORIGAMI_PROMOTION",
-    "COMPONENT_MERGES",
-    "TONAL_EXACT_COMMIT_PINNING"
+    "TONAL_EXACT_RELEASE_PINNING"
   ],
   "hard_gates": [
     "FALSE_EXACT_EQUALS_ZERO",
@@ -44,7 +45,8 @@
     "PEAK_ACTIVE_TOKEN_EQ_WITHIN_DECLARED_W",
     "UNKNOWN_OVER_UNDECLARED_INFERENCE",
     "PROMOTION_BELONGS_TO_ORIGAMI",
-    "TONAL_PINS_ONLY_MERGED_IMMUTABLE_COMMITS"
+    "TONAL_RELEASE_LOCK_ONLY_AFTER_EMPIRICAL_GATES"
   ],
-  "lock_policy": "Do not modify tonal.lock until both component PRs are merged and cross-component gates pass."
+  "lock_policy": "Merged component SHAs are recorded as the Hybrid candidate composition. tonal.lock remains on the previous promoted stack until real-model and Origami-promotion gates pass.",
+  "supported_claim": false
 }
