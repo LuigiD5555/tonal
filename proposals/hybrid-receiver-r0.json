@@ -1,0 +1,50 @@
+{
+  "schema": "tonal.compatibility-proposal.r0",
+  "id": "hybrid-receiver-r0",
+  "status": "PROPOSED_NOT_PINNED",
+  "components": {
+    "tlaloc": {
+      "branch": "feature/origami-hybrid-receiver-r0",
+      "contracts": [
+        "tlaloc.origami-receiver-distillation.r0",
+        "tlaloc.origami-hybrid-artifact-set.r0"
+      ],
+      "role": "swarm discovery, candidate improvement, distillation and tournament"
+    },
+    "origami": {
+      "branch": "feature/dependency-folding-r0",
+      "contracts": [
+        "origami.hybrid-receiver.r0",
+        "origami.tlaloc-hybrid-import.r0",
+        "origami.receiver-artifact.r0"
+      ],
+      "role": "carrier semantics, self-boot, local Rosetta binding, deterministic micro-runtime, memory, verification and artifact registry"
+    }
+  },
+  "primary_mode": "hybrid",
+  "diagnostic_modes": ["native", "computational"],
+  "required_sequence": [
+    "TLALOC_SWARM_DISCOVERY",
+    "TLALOC_DISTILLATION",
+    "TLALOC_TOURNAMENT",
+    "ORIGAMI_IMPORT",
+    "ORIGAMI_CARRIER_LOCAL_BINDING",
+    "ORIGAMI_BOOT_ROSETTA_PROGRAM_INDEX_MEMORY_VERIFICATION_BUILD",
+    "ISOLATED_MODEL_TEST",
+    "SYMBOL_PERMUTATION_TEST",
+    "ORIGAMI_PROMOTION",
+    "COMPONENT_MERGES",
+    "TONAL_EXACT_COMMIT_PINNING"
+  ],
+  "hard_gates": [
+    "FALSE_EXACT_EQUALS_ZERO",
+    "NO_HIDDEN_SOURCE_OR_ORACLE",
+    "NO_HARDCODED_GLOBAL_GLYPH_MEANINGS",
+    "DISTILLED_ACTIONS_ARE_PRESERVED",
+    "PEAK_ACTIVE_TOKEN_EQ_WITHIN_DECLARED_W",
+    "UNKNOWN_OVER_UNDECLARED_INFERENCE",
+    "PROMOTION_BELONGS_TO_ORIGAMI",
+    "TONAL_PINS_ONLY_MERGED_IMMUTABLE_COMMITS"
+  ],
+  "lock_policy": "Do not modify tonal.lock until both component PRs are merged and cross-component gates pass."
+}
