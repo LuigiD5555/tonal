@@ -1,15 +1,15 @@
 {
   "schema": "tonal.composition.v1",
   "tonal": {
-    "version": "0.1.0-alpha.2",
+    "version": "0.1.0-alpha.3",
     "status": "EXPERIMENTAL_COMPOSITION_CONTRACT",
     "role": "reproducible composition and distribution layer"
   },
   "components": {
     "tlaloc": {
-      "version": "6.0.0-alpha.9",
+      "version": "6.0.0-alpha.10",
       "repository": "https://github.com/LuigiD5555/tlaloc.git",
-      "commit": "6700b3bd9371a69ecc92a3f7bf95643d91f0f4ef",
+      "commit": "a20ab61d0043bc3e0a166f67207b01bdb2678a78",
       "role": "work/orchestration system"
     },
     "origami": {
@@ -25,8 +25,8 @@
     ],
     "notes": [
       "Origami 6.0.0-alpha.3 preserves the perceptual-channel contract introduced in alpha.2.",
-      "Tlaloc 6.0.0-alpha.9 remains contract-aware and adds the reusable repo-flow project skill without changing Origami runtime support.",
-      "Tonal carries the canonical stack-distribution copy of repo-flow and verified .claude/.agents mirrors."
+      "Tlaloc 6.0.0-alpha.10 removes its duplicate repo-flow copy, keeps five component-specific project skills, and adds repository-native CI without changing model-facing behavior semantics.",
+      "Tonal is the single canonical owner/distributor of the project-agnostic repo-flow skill and its verified .claude/.agents mirrors."
     ]
   },
   "invariants": [
@@ -35,7 +35,8 @@
     "TONAL_DOES_NOT_OWN_COMPONENT_SEMANTICS",
     "LOCKFILE_IMMUTABLE_AFTER_RELEASE",
     "UNSUPPORTED_COMPONENT_CAPABILITY_MUST_NOT_BE_PROMOTED_BY_COMPOSITION",
-    "REPO_FLOW_MIRRORS_MATCH_CANONICAL"
+    "REPO_FLOW_MIRRORS_MATCH_CANONICAL",
+    "REPO_FLOW_SINGLE_CANONICAL_AUTHORITY"
   ],
   "snapshot": {
     "physical_artifact": "NOT_YET_RELEASED",
