@@ -1,8 +1,64 @@
-# Tonal 0.1.0-alpha.5
+# Tonal 0.1.0-alpha.6
 
 Tonal is an optional **composition, compatibility, provenance and distribution layer for development toolchains and targets**.
 
 It exists so independently versioned development systems and target projects can be combined reproducibly without pretending they share one codebase or one semantic authority.
+
+## Current composition
+
+```text
+Tlaloc 6.0.0-alpha.16
+  development_tool
+  7f3393079d163131ad690f97de59ab2e2a249179
+
+Origami 6.0.0-alpha.13
+  target
+  7dbd7ba073b227377c6cc3ae592f4c4f2573dabf
+```
+
+This pair contains the second-half Origami protocol work:
+
+```text
+Origami
+  Protocol R0
+  S*/E* codec registry
+  capability negotiation
+  Master Prompt R4
+  rendered profile-3 at 640x640 / 8192 bytes
+  deterministic S2(E2(INDEX)) roundtrip
+
+Tlaloc
+  codec-aware Native regression
+  tlaloc-protocol-eval
+  deterministic READ/WRITE/ROUNDTRIP/MULTIHOP evaluation
+  semantic drift/invention/external-codec/exact-escalation metrics
+```
+
+## The most important boundary
+
+A green Tonal composition means:
+
+```text
+COMPOSITION_VERIFIED
+```
+
+It does **not** mean:
+
+```text
+PROTOCOL_INTEROPERABILITY_PROMOTED
+NATIVE_SEMANTIC_PROMOTED
+UNIVERSAL_MODEL_CAPABILITY
+```
+
+The current exact commits have deterministic component evidence for renderer/roundtrip/evaluators. Held-out real-model evidence remains pending for:
+
+```text
+Native S2 index recovery
+Native E2 write/construction behavior
+A -> B -> C cross-model Origami interoperability
+```
+
+Those claims remain owned by the relevant component/evidence process, not by Tonal.
 
 ## Composition model
 
@@ -21,7 +77,7 @@ Tlaloc  -> development_tool
 Origami -> target
 ```
 
-Blueprint Framework is an example of another development tool that Tonal may compose later. It is **not currently locked** because no repository/version/SHA has been supplied in this composition. Tonal never invents a component pin from a conceptual example.
+Blueprint Framework is an example of another development tool that Tonal may compose later. It is **not currently locked** because no exact repository/version/SHA has been supplied. Tonal never fabricates a component pin from a conceptual example.
 
 ## Ecosystem role
 
@@ -37,7 +93,7 @@ Blueprint Framework is an example of another development tool that Tonal may com
                             v
                          ORIGAMI
                            target
-                 owns its own releases
+          owns protocol/profile semantics/releases
 ```
 
 Tonal is not required to run Tlaloc or Origami.
@@ -76,13 +132,14 @@ Therefore:
 
 ```text
 TONAL COMPOSITION != ORIGAMI PROFILE PROMOTION
+TONAL VERIFICATION != PROTOCOL INTEROPERABILITY PROMOTION
 TONAL VERIFICATION != UNIVERSAL MODEL CAPABILITY
 TLALOC != REQUIRED ORIGAMI RUNTIME
 ```
 
 ## Generic component manifest
 
-`TONAL.json` now declares each component's:
+`TONAL.json` declares each component's:
 
 ```text
 kind
@@ -95,7 +152,7 @@ deterministic verification commands
 
 `tonal.lock` mirrors the immutable identity fields.
 
-Adding a future development tool no longer requires teaching Tonal that the only valid names are `tlaloc` and `origami`. A tool first has to be explicitly registered and pinned; only then is it part of the composition.
+A future tool first has to be explicitly registered and pinned; only then is it part of the composition.
 
 ## Verification
 
@@ -103,22 +160,14 @@ Adding a future development tool no longer requires teaching Tonal that the only
 ./scripts/verify-stack.sh
 ```
 
-Verification does four distinct things:
+Verification:
 
 1. verifies manifest/lock coherence and component kinds;
 2. fetches the exact immutable component commits;
 3. verifies each checkout's commit/version identity;
 4. executes the component-specific deterministic checks declared in `TONAL.json`.
 
-Historical Fixed Carrier R2 regression gates are retained as additional evidence rather than deleted.
-
-A green result means:
-
-```text
-COMPOSITION_VERIFIED
-```
-
-It does **not** mean that Origami Native visual support, Hybrid support or another empirical capability has been promoted.
+Historical Fixed Carrier R2 regression metadata is retained as historical evidence rather than rewritten as current protocol evidence.
 
 ## Generic snapshots
 
@@ -126,9 +175,7 @@ It does **not** mean that Origami Native visual support, Hybrid support or anoth
 ./scripts/build-snapshot.sh
 ```
 
-The snapshot builder now includes **every component in `tonal.lock`**, rather than hard-coding directories for only Tlaloc and Origami.
-
-The result remains a reproducible distribution artifact, not a new source repository.
+The snapshot builder includes every component in `tonal.lock`. The result is a reproducible distribution artifact, not a new source repository or a transfer of semantic authority.
 
 ## Component operations
 
@@ -138,20 +185,6 @@ The result remains a reproducible distribution artifact, not a new source reposi
 ```
 
 `update-component.sh` accepts any component already declared in the manifest. It refuses unknown names instead of silently creating an ungoverned component.
-
-## Current exact pins
-
-At this branch stage:
-
-```text
-Tlaloc  6.0.0-alpha.14
-9b83e76f33c888b8701d3ab6a48049425ba7b8e8
-
-Origami 6.0.0-alpha.10
-fe4ba64ef35dc900c84fa5c20c9afad4fceee173
-```
-
-The Origami pin will only advance when the pending portable-baseline release is actually merged and green; Tonal will not pin an unmerged branch as a released target revision.
 
 ## Shared workflow
 
@@ -169,6 +202,9 @@ UNPINNED TOOL != COMPOSITION COMPONENT
 SNAPSHOT REFERENCES EXACT COMMITS
 DECLARED COMPONENT VERIFICATION MUST PASS
 TONAL COMPOSITION != TARGET PROMOTION
+COMPOSITION VERIFIED != PROTOCOL INTEROPERABILITY PROMOTED
+COMPOSITION VERIFIED != NATIVE SEMANTIC PROMOTED
+REAL MODEL EVIDENCE REMAINS COMPONENT OWNED
 ```
 
 See `PROJECT_BOUNDARY.md`, `TONAL.json`, `tonal.lock` and `compatibility.json`.
