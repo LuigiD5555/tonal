@@ -5,15 +5,15 @@
   "components": {
     "tlaloc": {
       "kind": "development_tool",
-      "version": "6.0.0-alpha.14",
+      "version": "6.0.0-alpha.15",
       "repository": "https://github.com/LuigiD5555/tlaloc.git",
-      "commit": "9b83e76f33c888b8701d3ab6a48049425ba7b8e8"
+      "commit": "349deaef6f6c94966c814f9f99a1ec1fb78b875f"
     },
     "origami": {
       "kind": "target",
-      "version": "6.0.0-alpha.10",
+      "version": "6.0.0-alpha.11",
       "repository": "https://github.com/LuigiD5555/origami.git",
-      "commit": "fe4ba64ef35dc900c84fa5c20c9afad4fceee173"
+      "commit": "89bdde22f80ec4df1e61b9039bd0a9250672d1ff"
     }
   }
 }
