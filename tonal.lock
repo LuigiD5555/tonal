@@ -11,9 +11,9 @@
     },
     "origami": {
       "kind": "target",
-      "version": "6.0.0-alpha.11",
+      "version": "6.0.0-alpha.12",
       "repository": "https://github.com/LuigiD5555/origami.git",
-      "commit": "89bdde22f80ec4df1e61b9039bd0a9250672d1ff"
+      "commit": "12176e6829e8cd0aaaa1db03f0b2cc4f4d5ea838"
     }
   }
 }
