@@ -1,0 +1,49 @@
+{
+  "schema": "tonal.proposal.r0",
+  "id": "fixed-carrier-r2",
+  "status": "COMPONENTS_MERGED_CI_GREEN_PENDING_EMPIRICAL_PROMOTION",
+  "origami": {
+    "contract": "origami.fixed-carrier.r2",
+    "required_version": "6.0.0-alpha.5",
+    "merged_commit": "cf6094cf9d3d9f636afae9bc62c15d063ad4fb3a",
+    "ci": "GREEN"
+  },
+  "tlaloc": {
+    "tool_protocol": "tlaloc.origami-tools.r2",
+    "required_version": "6.0.0-alpha.11",
+    "merged_commit": "44dca10d1deb78446131a2de84ac37120081e5e0",
+    "ci": "GREEN"
+  },
+  "invariants": [
+    "ORIGAMI_CONTROL_PLANE_TLALOC_DATA_PLANE",
+    "PNG_SIZE_INDEPENDENT_OF_CORPUS",
+    "MODELS_PROPOSE_REDUCER_DECIDES",
+    "FALSE_EXACT=0",
+    "COMPONENT_REPOSITORIES_REMAIN_AUTHORITATIVE"
+  ],
+  "promotion_requires": [
+    "candidate_component_identity_gate",
+    "candidate_component_test_gate",
+    "remaining_empirical_gates",
+    "explicit_tonal_lock_update_in_new_release"
+  ],
+  "completed_gates": [
+    "origami_fixed_carrier_r2_ci",
+    "origami_gatekeeper",
+    "tlaloc_canonical_memory_r2_ci",
+    "tlaloc_gatekeeper",
+    "fixed_png_size_independent_of_corpus",
+    "deterministic_canonical_replay_cdr_1_0",
+    "false_exact_equals_zero_on_reference_corpus",
+    "deepseek_visual_probe_observed"
+  ],
+  "remaining_empirical_gates": [
+    "cross_model_t0_boot_readability",
+    "cross_model_dual_visual_probe",
+    "real_external_tool_bridge_end_to_end",
+    "held_out_multi_document_routing",
+    "origami_native_visual_machine_promotion"
+  ],
+  "lock_policy": "Keep tonal.lock on the previously promoted stack until the remaining empirical gates pass. The merged R2 SHAs are recorded and automatically verified as an exact candidate composition.",
+  "supported_claim": false
+}

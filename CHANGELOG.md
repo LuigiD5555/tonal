@@ -1,5 +1,13 @@
 # Tonal changelog
 
+## 0.1.0-alpha.4 — Candidate composition records
+
+- records the merged Hybrid Receiver candidate composition without silently promoting unresolved real-model gates;
+- adds the Fixed Carrier R2 candidate pairing Origami `6.0.0-alpha.5` at `cf6094cf9d3d9f636afae9bc62c15d063ad4fb3a` with Tlaloc `6.0.0-alpha.11` at `44dca10d1deb78446131a2de84ac37120081e5e0`;
+- adds automated candidate identity/contract verification independent of the released `tonal.lock`;
+- keeps the lock on the previously promoted stack until cross-model visual BOOT, real external tool-bridge, held-out multi-document and Native visual-machine gates are complete;
+- preserves `SUPPORTED` as an explicit later promotion decision rather than equating component merge with stack support.
+
 ## 0.1.0-alpha.3 — Stack Definition R0
 
 - formalizes the complete project as three independently versioned repositories with Tonal as composition root;
