@@ -5,8 +5,8 @@
   "current": {
     "state": "COMPOSITION_VERIFIED",
     "components": {
-      "tlaloc": {"kind":"development_tool","commit":"9b83e76f33c888b8701d3ab6a48049425ba7b8e8"},
-      "origami": {"kind":"target","commit":"fe4ba64ef35dc900c84fa5c20c9afad4fceee173"}
+      "tlaloc": {"kind":"development_tool","commit":"349deaef6f6c94966c814f9f99a1ec1fb78b875f"},
+      "origami": {"kind":"target","commit":"12176e6829e8cd0aaaa1db03f0b2cc4f4d5ea838"}
     },
     "required_gates": [
       "manifest_lock_coherence",
@@ -16,6 +16,7 @@
       "snapshot_build"
     ],
     "target_capability_promotion": false,
-    "note": "COMPOSITION_VERIFIED means the exact locked toolchain passes Tonal's declared deterministic integration checks. It does not promote Origami profiles, semantics or empirical model capabilities."
+    "native_semantic_empirical_promotion": false,
+    "note": "COMPOSITION_VERIFIED means the exact locked toolchain passes Tonal's declared deterministic integration checks. It does not claim that the corrected Origami alpha.12 carrier passes held-out VLM Native semantic trials; that empirical capability remains target-owned and pending."
   }
 }
