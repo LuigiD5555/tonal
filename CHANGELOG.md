@@ -11,7 +11,9 @@
 - distinguishes `COMPOSITION_VERIFIED` from target/model capability promotion;
 - formalizes `TONAL_COMPOSITION != TARGET_PROMOTION` and `TONAL_IS_OPTIONAL_FOR_COMPONENT_RUNTIME`;
 - preserves historical Fixed Carrier R2 candidate records/regression gates;
-- updates the current Tlaloc development-tool pin to `6.0.0-alpha.14`; the Origami target pin remains on the last merged green release until the pending alpha.11 PR is merged.
+- pins Tlaloc `6.0.0-alpha.15` at `349deaef6f6c94966c814f9f99a1ec1fb78b875f`, including Prompt-First Distillation and failure-driven Native semantic regression tooling;
+- pins Origami `6.0.0-alpha.12` at `12176e6829e8cd0aaaa1db03f0b2cc4f4d5ea838`, including semantic-first T2 navigation and the preserved failed index regression;
+- explicitly keeps Native semantic empirical promotion false: a reproducibly green composition is not evidence that held-out VLMs now pass the corrected index test.
 
 ## 0.1.0-alpha.4 — Candidate composition records
 
