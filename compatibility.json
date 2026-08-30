@@ -1,24 +1,21 @@
 {
-  "schema": "tonal.compatibility.r0",
-  "tonal_version": "0.1.0-alpha.3",
-  "states": ["UNKNOWN", "RECOGNIZED", "IMPLEMENTED", "VERIFIED", "SUPPORTED"],
+  "schema": "tonal.compatibility.r1",
+  "tonal_version": "0.1.0-alpha.5",
+  "states": ["UNKNOWN", "RECOGNIZED", "COMPOSITION_VERIFIED", "COMPOSITION_RELEASED"],
   "current": {
-    "state": "VERIFIED",
+    "state": "COMPOSITION_VERIFIED",
     "components": {
-      "tlaloc": "a20ab61d0043bc3e0a166f67207b01bdb2678a78",
-      "origami": "bd6e47979fcc8918cefe1302bd34e183d784a14a"
+      "tlaloc": {"kind":"development_tool","commit":"9b83e76f33c888b8701d3ab6a48049425ba7b8e8"},
+      "origami": {"kind":"target","commit":"fe4ba64ef35dc900c84fa5c20c9afad4fceee173"}
     },
     "required_gates": [
       "manifest_lock_coherence",
       "component_identity",
-      "origami_go_test",
-      "origami_go_vet",
-      "origami_exp001_evidence",
-      "tlaloc_behavior_lab_go_test",
-      "tlaloc_behavior_lab_go_vet",
+      "component_declared_verification",
+      "historical_fixed_carrier_r2_regression",
       "snapshot_build"
     ],
-    "supported_claim": false,
-    "note": "VERIFIED means the pinned combination passes deterministic repository gates. SUPPORTED remains a separate promotion decision."
+    "target_capability_promotion": false,
+    "note": "COMPOSITION_VERIFIED means the exact locked toolchain passes Tonal's declared deterministic integration checks. It does not promote Origami profiles, semantics or empirical model capabilities."
   }
 }
