@@ -1,7 +1,7 @@
 {
   "schema": "tonal.composition.v2",
   "tonal": {
-    "version": "0.1.0-alpha.5",
+    "version": "0.1.0-alpha.6",
     "status": "EXPERIMENTAL_COMPOSITION_CONTRACT",
     "role": "optional reproducible composition, integration, provenance and distribution of independently versioned development tools and targets"
   },
@@ -21,10 +21,10 @@
   "components": {
     "tlaloc": {
       "kind": "development_tool",
-      "version": "6.0.0-alpha.15",
+      "version": "6.0.0-alpha.16",
       "repository": "https://github.com/LuigiD5555/tlaloc.git",
-      "commit": "349deaef6f6c94966c814f9f99a1ec1fb78b875f",
-      "authority": "behavioral development, bounded Tlaloque swarm experiments, prompt-first distillation, failure-to-regression conversion and target-specific development laboratories",
+      "commit": "7f3393079d163131ad690f97de59ab2e2a249179",
+      "authority": "behavioral development, bounded Tlaloque experiments, prompt-first distillation, failure-to-regression conversion, protocol interoperability evaluation and target-specific development laboratories",
       "role": "optional development kit",
       "verification": [
         {"cwd":"behavior-lab","argv":["go","test","./..."]},
@@ -33,10 +33,10 @@
     },
     "origami": {
       "kind": "target",
-      "version": "6.0.0-alpha.12",
+      "version": "6.0.0-alpha.13",
       "repository": "https://github.com/LuigiD5555/origami.git",
-      "commit": "12176e6829e8cd0aaaa1db03f0b2cc4f4d5ea838",
-      "authority": "Origami representation semantics, semantic/native navigation, state machines, visual grammar, ROSETTA, Writer/Reader contracts and Origami releases",
+      "commit": "7dbd7ba073b227377c6cc3ae592f4c4f2573dabf",
+      "authority": "Origami protocol and representation semantics, ROSETTA, decoder/encoder codec registries, capability negotiation, semantic/native navigation, state machines, visual grammar, Writer/Reader contracts, profiles and releases",
       "role": "independent target project",
       "verification": [
         {"cwd":".","argv":["go","test","./..."]},
@@ -53,16 +53,28 @@
     "component_semantics": "owned only by each component/target repository",
     "target_release_authority": "target repository",
     "development_artifact_authority": "development tool until accepted by target",
-    "origami_profile_authority": "origami"
+    "origami_profile_authority": "origami",
+    "origami_protocol_authority": "origami"
   },
   "contracts": {
     "notes": [
       "Tlaloc and Origami remain independently usable and authoritative for their own contracts.",
       "Tonal can compose Tlaloc, Blueprint Framework or other development systems once exact pins are supplied; unpinned examples are never treated as installed components.",
-      "A Tonal verification proves the declared composition is reproducible and its configured checks pass. It does not promote Origami semantics, visual profiles or model capabilities.",
+      "A Tonal verification proves the declared composition is reproducible and its configured checks pass. It does not promote Origami protocol semantics, visual profiles or model capabilities.",
       "A Tonal composition references exact commits, never floating branches.",
-      "The current composition includes the failure-driven Native semantic regression tooling in Tlaloc alpha.15 and the matching semantic-first T2 correction in Origami alpha.12; this composition does not claim held-out VLM success."
+      "The current composition includes Tlaloc alpha.16 deterministic Origami Protocol interoperability evaluation and Origami alpha.13 Protocol R0/profile-3 renderer.",
+      "Origami profile-3 deterministic renderer/size/roundtrip evidence is green, but held-out Native S2/E2 and A-to-B-to-C real-model interoperability remain target/development evidence pending."
     ]
+  },
+  "capability_evidence": {
+    "composition_verified": "PENDING_TONAL_VERIFY",
+    "origami_profile_3_deterministic_renderer": "COMPONENT_CI_GREEN",
+    "origami_s2_e2_deterministic_roundtrip": "COMPONENT_CI_GREEN",
+    "tlaloc_protocol_evaluator": "COMPONENT_CI_GREEN",
+    "held_out_native_s2": "PENDING_EXTERNAL_MODEL_TRIALS",
+    "held_out_native_e2": "PENDING_EXTERNAL_MODEL_TRIALS",
+    "cross_model_a_b_c": "PENDING_EXTERNAL_MODEL_TRIALS",
+    "protocol_interoperability_promoted": false
   },
   "invariants": [
     "COMPONENT_REPOSITORIES_REMAIN_AUTHORITATIVE",
@@ -74,6 +86,9 @@
     "LOCKFILE_IMMUTABLE_AFTER_RELEASE",
     "UNPINNED_TOOL_NE_COMPOSITION_COMPONENT",
     "DECLARED_COMPONENT_VERIFICATION_MUST_PASS",
+    "COMPOSITION_VERIFIED_NE_PROTOCOL_INTEROPERABILITY_PROMOTED",
+    "COMPOSITION_VERIFIED_NE_NATIVE_SEMANTIC_PROMOTED",
+    "REAL_MODEL_EVIDENCE_REMAINS_COMPONENT_OWNED",
     "REPO_FLOW_SINGLE_AUTHORITY_IS_TONAL",
     "REPO_FLOW_MIRRORS_MATCH_CANONICAL"
   ],
