@@ -21,10 +21,10 @@
   "components": {
     "tlaloc": {
       "kind": "development_tool",
-      "version": "6.0.0-alpha.14",
+      "version": "6.0.0-alpha.15",
       "repository": "https://github.com/LuigiD5555/tlaloc.git",
-      "commit": "9b83e76f33c888b8701d3ab6a48049425ba7b8e8",
-      "authority": "behavioral development, bounded Tlaloque swarm experiments, prompt-first distillation and target-specific development laboratories",
+      "commit": "349deaef6f6c94966c814f9f99a1ec1fb78b875f",
+      "authority": "behavioral development, bounded Tlaloque swarm experiments, prompt-first distillation, failure-to-regression conversion and target-specific development laboratories",
       "role": "optional development kit",
       "verification": [
         {"cwd":"behavior-lab","argv":["go","test","./..."]},
