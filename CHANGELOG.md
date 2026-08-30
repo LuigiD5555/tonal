@@ -1,5 +1,17 @@
 # Tonal changelog
 
+## 0.1.0-alpha.6 — Origami Protocol R0 composition
+
+- pins Tlaloc `6.0.0-alpha.16` at `7f3393079d163131ad690f97de59ab2e2a249179`;
+- pins Origami `6.0.0-alpha.13` at `7dbd7ba073b227377c6cc3ae592f4c4f2573dabf`;
+- records deterministic Origami Protocol R0 support artifacts: S*/E* codec registry, capability negotiation, Master Prompt R4 and rendered profile-3;
+- records deterministic Tlaloc protocol evaluation: READ/WRITE/ROUNDTRIP/MULTIHOP, codec discovery, semantic preservation/drift, invention, external-codec dependency and semantic-to-exact escalation;
+- records component-green profile-3 640x640 / 8192-byte renderer, profile-1/profile-2 decode non-regression and `S2(E2(INDEX))` roundtrip evidence;
+- adds explicit separation `COMPOSITION_VERIFIED != PROTOCOL_INTEROPERABILITY_PROMOTED != NATIVE_SEMANTIC_PROMOTED`;
+- keeps held-out Native S2, Native E2 and A -> B -> C real-model evidence pending and component-owned;
+- does not make Tlaloc or Tonal runtime requirements for Origami;
+- preserves historical Fixed Carrier R2 proposal/regression metadata independently of the new protocol composition.
+
 ## 0.1.0-alpha.5 — Generic Development-Tool Composition R1
 
 - replaces the pair-specific composition model with `tonal.composition.v2` and `tonal.lock.v2`;
