@@ -1,4 +1,4 @@
-# Tonal 0.1.0-alpha.3
+# Tonal 0.1.0-alpha.4
 
 Tonal is the **composition, compatibility, evidence and distribution layer** for independently versioned Tlaloc and Origami.
 
@@ -10,6 +10,17 @@ Tonal does not own Tlaloc behavior semantics or Origami representation semantics
 |---|---|---|
 | Tlaloc | `6.0.0-alpha.10` | `a20ab61d0043bc3e0a166f67207b01bdb2678a78` |
 | Origami | `6.0.0-alpha.3` | `bd6e47979fcc8918cefe1302bd34e183d784a14a` |
+
+## Fixed Carrier R2 candidate composition
+
+Tonal now records, but does not yet promote as universally `SUPPORTED`, the exact R2 pair:
+
+| Component | Version | Merged revision |
+|---|---|---|
+| Tlaloc | `6.0.0-alpha.11` | `44dca10d1deb78446131a2de84ac37120081e5e0` |
+| Origami | `6.0.0-alpha.5` | `cf6094cf9d3d9f636afae9bc62c15d063ad4fb3a` |
+
+This pair is validated separately through `proposals/FIXED_CARRIER_R2.json` and `scripts/verify-fixed-carrier-r2.sh`. The released `tonal.lock` remains unchanged until the remaining real-model/cross-model empirical gates pass. This preserves Tonal's rule that a merged component is not automatically a promoted stack.
 
 ## Repository roles
 
