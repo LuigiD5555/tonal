@@ -33,10 +33,10 @@
     },
     "origami": {
       "kind": "target",
-      "version": "6.0.0-alpha.11",
+      "version": "6.0.0-alpha.12",
       "repository": "https://github.com/LuigiD5555/origami.git",
-      "commit": "89bdde22f80ec4df1e61b9039bd0a9250672d1ff",
-      "authority": "Origami representation semantics, state machines, visual grammar, ROSETTA, Writer/Reader contracts and Origami releases",
+      "commit": "12176e6829e8cd0aaaa1db03f0b2cc4f4d5ea838",
+      "authority": "Origami representation semantics, semantic/native navigation, state machines, visual grammar, ROSETTA, Writer/Reader contracts and Origami releases",
       "role": "independent target project",
       "verification": [
         {"cwd":".","argv":["go","test","./..."]},
@@ -60,7 +60,8 @@
       "Tlaloc and Origami remain independently usable and authoritative for their own contracts.",
       "Tonal can compose Tlaloc, Blueprint Framework or other development systems once exact pins are supplied; unpinned examples are never treated as installed components.",
       "A Tonal verification proves the declared composition is reproducible and its configured checks pass. It does not promote Origami semantics, visual profiles or model capabilities.",
-      "A Tonal composition references exact commits, never floating branches."
+      "A Tonal composition references exact commits, never floating branches.",
+      "The current composition includes the failure-driven Native semantic regression tooling in Tlaloc alpha.15 and the matching semantic-first T2 correction in Origami alpha.12; this composition does not claim held-out VLM success."
     ]
   },
   "invariants": [
