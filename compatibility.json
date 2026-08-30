@@ -1,12 +1,12 @@
 {
   "schema": "tonal.compatibility.r1",
-  "tonal_version": "0.1.0-alpha.5",
+  "tonal_version": "0.1.0-alpha.6",
   "states": ["UNKNOWN", "RECOGNIZED", "COMPOSITION_VERIFIED", "COMPOSITION_RELEASED"],
   "current": {
     "state": "COMPOSITION_VERIFIED",
     "components": {
-      "tlaloc": {"kind":"development_tool","commit":"349deaef6f6c94966c814f9f99a1ec1fb78b875f"},
-      "origami": {"kind":"target","commit":"12176e6829e8cd0aaaa1db03f0b2cc4f4d5ea838"}
+      "tlaloc": {"kind":"development_tool","commit":"7f3393079d163131ad690f97de59ab2e2a249179"},
+      "origami": {"kind":"target","commit":"7dbd7ba073b227377c6cc3ae592f4c4f2573dabf"}
     },
     "required_gates": [
       "manifest_lock_coherence",
@@ -17,6 +17,17 @@
     ],
     "target_capability_promotion": false,
     "native_semantic_empirical_promotion": false,
-    "note": "COMPOSITION_VERIFIED means the exact locked toolchain passes Tonal's declared deterministic integration checks. It does not claim that the corrected Origami alpha.12 carrier passes held-out VLM Native semantic trials; that empirical capability remains target-owned and pending."
+    "protocol_interoperability_promotion": false,
+    "deterministic_protocol_stack": {
+      "origami_profile_3_renderer": true,
+      "origami_s2_e2_roundtrip": true,
+      "tlaloc_protocol_evaluator": true
+    },
+    "external_model_evidence": {
+      "held_out_native_s2": "PENDING",
+      "held_out_native_e2": "PENDING",
+      "cross_model_a_b_c": "PENDING"
+    },
+    "note": "COMPOSITION_VERIFIED means the exact locked Tlaloc alpha.16 + Origami alpha.13 toolchain passes Tonal's declared deterministic integration checks. It does not claim held-out Native S2/E2 success or real cross-model Origami protocol interoperability; those capabilities remain component-owned and empirical-evidence pending."
   }
 }
