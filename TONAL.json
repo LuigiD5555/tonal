@@ -33,9 +33,9 @@
     },
     "origami": {
       "kind": "target",
-      "version": "6.0.0-alpha.10",
+      "version": "6.0.0-alpha.11",
       "repository": "https://github.com/LuigiD5555/origami.git",
-      "commit": "fe4ba64ef35dc900c84fa5c20c9afad4fceee173",
+      "commit": "89bdde22f80ec4df1e61b9039bd0a9250672d1ff",
       "authority": "Origami representation semantics, state machines, visual grammar, ROSETTA, Writer/Reader contracts and Origami releases",
       "role": "independent target project",
       "verification": [
