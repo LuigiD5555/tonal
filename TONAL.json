@@ -1,57 +1,84 @@
 {
-  "schema": "tonal.composition.v1",
+  "schema": "tonal.composition.v2",
   "tonal": {
-    "version": "0.1.0-alpha.4",
+    "version": "0.1.0-alpha.5",
     "status": "EXPERIMENTAL_COMPOSITION_CONTRACT",
-    "role": "reproducible composition, distribution, integration and release layer"
+    "role": "optional reproducible composition, integration, provenance and distribution of independently versioned development tools and targets"
   },
   "project": {
     "name": "Tonal",
-    "architecture": "three independently versioned repositories composed by exact immutable commits",
-    "entrypoint": "tonal"
+    "architecture": "generic exact-commit composition of independent development tools, targets and optional support components",
+    "entrypoint": "tonal",
+    "required_for_target_runtime": false
+  },
+  "composition_model": {
+    "component_kinds": ["development_tool", "target", "support"],
+    "current_development_tools": ["tlaloc"],
+    "current_targets": ["origami"],
+    "unlocked_examples": ["Blueprint Framework"],
+    "rule": "An example is not part of a Tonal composition until an exact repository, version and immutable commit are explicitly added to the manifest and lock."
   },
   "components": {
     "tlaloc": {
-      "version": "6.0.0-alpha.10",
+      "kind": "development_tool",
+      "version": "6.0.0-alpha.14",
       "repository": "https://github.com/LuigiD5555/tlaloc.git",
-      "commit": "0c5b0994f61ace9915540e6cd727d9b2410b8f2f",
-      "authority": "behavior compilation, swarm orchestration, training, verification and Tlaloque execution",
-      "role": "work/orchestration system"
+      "commit": "9b83e76f33c888b8701d3ab6a48049425ba7b8e8",
+      "authority": "behavioral development, bounded Tlaloque swarm experiments, prompt-first distillation and target-specific development laboratories",
+      "role": "optional development kit",
+      "verification": [
+        {"cwd":"behavior-lab","argv":["go","test","./..."]},
+        {"cwd":"behavior-lab","argv":["go","vet","./..."]}
+      ]
     },
     "origami": {
-      "version": "6.0.0-alpha.3",
+      "kind": "target",
+      "version": "6.0.0-alpha.10",
       "repository": "https://github.com/LuigiD5555/origami.git",
-      "commit": "7de2598cc050dfbf4c0649225a1b7b64f9b0f88f",
-      "authority": "representation, visual/computational language, state machines and deterministic experimental evidence",
-      "role": "visual/computational representation and state-machine language"
+      "commit": "fe4ba64ef35dc900c84fa5c20c9afad4fceee173",
+      "authority": "Origami representation semantics, state machines, visual grammar, ROSETTA, Writer/Reader contracts and Origami releases",
+      "role": "independent target project",
+      "verification": [
+        {"cwd":".","argv":["go","test","./..."]},
+        {"cwd":".","argv":["go","vet","./..."]},
+        {"cwd":".","argv":["mkdir","-p","evidence"]},
+        {"cwd":".","argv":["go","run","./cmd/origami-reference","--experiment","experiments/EXP-001-relational-state/experiment.json","--out","evidence/EXP-001-reference.json"]},
+        {"cwd":".","argv":["go","run","./cmd/origami-evidence-gate","--experiment","experiments/EXP-001-relational-state/experiment.json","--evidence","evidence/EXP-001-reference.json"]}
+      ]
     }
   },
   "ownership": {
     "repo_flow": "tonal",
-    "component_semantics": "owned only by each component repository",
-    "composition_contract": "tonal"
+    "composition_contract": "tonal",
+    "component_semantics": "owned only by each component/target repository",
+    "target_release_authority": "target repository",
+    "development_artifact_authority": "development tool until accepted by target",
+    "origami_profile_authority": "origami"
   },
   "contracts": {
-    "origami": ["origami.perceptual-channels.r0", "origami.reference-evidence.r0"],
     "notes": [
-      "Tlaloc and Origami remain independently versioned and authoritative for their own semantics.",
-      "Tonal is the single authority for project-agnostic repo-flow and Gatekeeper policy distribution and stack composition.",
-      "Origami reference experiments are evidence-driven and their CI gate must remain green before Tonal promotes a new Origami commit.",
-      "A Tonal composition promotes exact commits, never floating branches."
+      "Tlaloc and Origami remain independently usable and authoritative for their own contracts.",
+      "Tonal can compose Tlaloc, Blueprint Framework or other development systems once exact pins are supplied; unpinned examples are never treated as installed components.",
+      "A Tonal verification proves the declared composition is reproducible and its configured checks pass. It does not promote Origami semantics, visual profiles or model capabilities.",
+      "A Tonal composition references exact commits, never floating branches."
     ]
   },
   "invariants": [
     "COMPONENT_REPOSITORIES_REMAIN_AUTHORITATIVE",
+    "TARGET_REPOSITORY_OWNS_TARGET_RELEASES",
+    "TONAL_COMPOSITION_NE_TARGET_PROMOTION",
+    "TONAL_IS_OPTIONAL_FOR_COMPONENT_RUNTIME",
     "SNAPSHOT_REFERENCES_EXACT_COMMITS",
     "TONAL_DOES_NOT_OWN_COMPONENT_SEMANTICS",
     "LOCKFILE_IMMUTABLE_AFTER_RELEASE",
-    "UNSUPPORTED_COMPONENT_CAPABILITY_MUST_NOT_BE_PROMOTED_BY_COMPOSITION",
+    "UNPINNED_TOOL_NE_COMPOSITION_COMPONENT",
+    "DECLARED_COMPONENT_VERIFICATION_MUST_PASS",
     "REPO_FLOW_SINGLE_AUTHORITY_IS_TONAL",
-    "REPO_FLOW_MIRRORS_MATCH_CANONICAL",
-    "COMPONENT_CI_MUST_PASS_BEFORE_PROMOTION"
+    "REPO_FLOW_MIRRORS_MATCH_CANONICAL"
   ],
   "snapshot": {
     "physical_artifact": "BUILT_BY_VERIFY_WORKFLOW",
-    "builder_status": "IMPLEMENTED"
+    "builder_status": "IMPLEMENTED",
+    "contents": "all locked components plus composition metadata and shared skills"
   }
 }
