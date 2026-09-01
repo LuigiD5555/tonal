@@ -1,6 +1,6 @@
 # EVIDENCE_PLAN — Plan de cierre de discrepancia
 
-**Versión del plan:** 0.5.0
+**Versión del plan:** 0.7.0
 **Fecha de corte:** 2026-09-01
 **Autoridad:** este documento es la fuente de verdad del *plan*. No es fuente de verdad del *estado*.
 **Ámbito:** stack `tlaloc` + `origami` + `tonal`.
@@ -57,14 +57,12 @@ Terminar a medias y decirlo es un resultado válido. Terminar a medias y no deci
 
 ### TAREA ACTUAL
 
-> **Semana 1 — Poblar el ledger de Tonal.**
+> **Semana 3 — Trayectorias y gates C1/C2.**
 >
-> Crear `tonal/state/CLAIMS.json` con el esquema de §4.3, los estados de §4.4 y el poblado de Tonal descrito en §4.5.
-> Reutilizar el contrato y las reglas ya probadas por el validador de Tlaloc; no crear un segundo esquema incompatible.
-> Fuentes permitidas: código real del repo, `README.md`, `tonal.lock`, documentos de estado/diseño, tests y scripts existentes.
-> Cubrir al menos resolución de revisiones, verificación de coherencia lock/version y distribución de `repo-flow`. Todo lo que no tenga test asociado entra como `designed`.
-> Si aparece una contradicción, registrarla como `pending` en `tonal/state/PENDING_DISCREPANCIES.json` siguiendo la estructura ya usada por Origami; no resolverla por suposición ni promover el claim afectado.
-> No generar todavía la tabla de estado de Tonal ni avanzar a Run Records en esta tarea.
+> Emitir los eventos de §6.2 dentro de `trace[]` del Run Record desde la ruta existente de `realcampaign`; no crear un log de trayectorias paralelo.
+> Extender el gate de Tonal para cumplir C1 y C2: rechazar deriva entre superficies de versión/lock/ledger y rechazar todo claim con status `evidenced` o `evidenced_failing` cuyo `run_id` no exista.
+> Añadir pruebas negativas que demuestren ambos rechazos y conservar el replay determinista de C3 verde.
+> No estimar todavía la matriz Markov ni usar ninguna transición para decidir.
 
 Cuando la tarea cambie, se cambia **aquí** y se anota en §12. Nunca hay dos tareas actuales.
 
@@ -414,10 +412,8 @@ La secuencia es la apuesta, no una promesa. Si la semana 2 se estira, la 4 se re
 
 Se resuelven dentro del ciclo y se registran en §12 cuando se cierren.
 
-- **P1.** ¿El ledger vive por componente o centralizado en Tonal? Propuesta actual: por componente, con Tonal verificando coherencia. Sin decidir.
 - **P2.** ¿Qué `N` de repeticiones para muestreo estocástico? Punto de partida 5 / 30. Sin medir.
 - **P3.** ¿El piso de 30 observaciones aguanta con el volumen real de corridas que se pueden generar en semanas? Si no, la capa 4 se pospone y se declara así, en vez de bajar el piso.
-- **P4.** ¿`repo-flow` en Tonal es el lugar correcto para el script de validación del ledger, o va en cada componente?
 
 ---
 
@@ -433,6 +429,8 @@ Toda modificación al plan se registra aquí. Una línea, con fecha y causa.
 | 2026-09-01 | v0.3.0: plan materializado en Tonal, §2 actualizado contra `origin/main` y `TAREA ACTUAL` avanzada al validador/generador de Tlaloc | Las referencias locales usadas por v0.1.0 estaban atrasadas; el ledger inicial de Tlaloc ya permite probar el siguiente gate |
 | 2026-09-01 | v0.4.0: `TAREA ACTUAL` avanzada al ledger de Origami | Tlaloc ya valida su ledger, genera `CAPABILITY_STATUS` y rechaza divergencia en CI mediante el commit local `9ba1a22` |
 | 2026-09-01 | v0.5.0: `TAREA ACTUAL` avanzada al ledger de Tonal y las contradicciones pasan a listas estructuradas pendientes | Origami ya separa 21 capacidades implementadas, 9 diseñadas y 5 discrepancias pendientes mediante el commit local `15820f3` |
+| 2026-09-01 | v0.6.0: cerrada Semana 1, ledger por componente con validación local y Tonal como verificador de composición; `TAREA ACTUAL` avanzada al Run Record base | Tlaloc, Origami y Tonal ya validan sus ledgers y rechazan deriva de las tablas generadas; se evita depender de un checkout vecino para validar estado local |
+| 2026-09-01 | v0.7.0: `TAREA ACTUAL` avanzada a trayectorias y gates C1/C2 | Tlaloc ya emite Run Records inmutables desde `realcampaign.Prepare`, calcula `env_hash`, mantiene `index.jsonl` y verifica replay determinista con el mismo `env_hash` y `output_hash` |
 
 ---
 
