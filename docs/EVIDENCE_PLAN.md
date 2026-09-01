@@ -1,6 +1,6 @@
 # EVIDENCE_PLAN — Plan de cierre de discrepancia
 
-**Versión del plan:** 0.4.0
+**Versión del plan:** 0.5.0
 **Fecha de corte:** 2026-09-01
 **Autoridad:** este documento es la fuente de verdad del *plan*. No es fuente de verdad del *estado*.
 **Ámbito:** stack `tlaloc` + `origami` + `tonal`.
@@ -57,13 +57,14 @@ Terminar a medias y decirlo es un resultado válido. Terminar a medias y no deci
 
 ### TAREA ACTUAL
 
-> **Semana 1 — Poblar el ledger de Origami.**
+> **Semana 1 — Poblar el ledger de Tonal.**
 >
-> Crear `origami/state/CLAIMS.json` con el esquema de §4.3, los estados de §4.4 y el poblado de Origami descrito en §4.5.
+> Crear `tonal/state/CLAIMS.json` con el esquema de §4.3, los estados de §4.4 y el poblado de Tonal descrito en §4.5.
 > Reutilizar el contrato y las reglas ya probadas por el validador de Tlaloc; no crear un segundo esquema incompatible.
-> Fuentes permitidas: código real del repo, `README.md`, documentos de estado/diseño, `CHANGE_CONTROL_*.md`, tests y corridas existentes.
-> Separar cualquier éxito y fallo empírico en claims distintos. Todo lo que no tenga test asociado entra como `designed`; ninguna corrida se considera `run_id` si no satisface el layout de §5.
-> No generar todavía la tabla de estado de Origami ni avanzar a Run Records en esta tarea.
+> Fuentes permitidas: código real del repo, `README.md`, `tonal.lock`, documentos de estado/diseño, tests y scripts existentes.
+> Cubrir al menos resolución de revisiones, verificación de coherencia lock/version y distribución de `repo-flow`. Todo lo que no tenga test asociado entra como `designed`.
+> Si aparece una contradicción, registrarla como `pending` en `tonal/state/PENDING_DISCREPANCIES.json` siguiendo la estructura ya usada por Origami; no resolverla por suposición ni promover el claim afectado.
+> No generar todavía la tabla de estado de Tonal ni avanzar a Run Records en esta tarea.
 
 Cuando la tarea cambie, se cambia **aquí** y se anota en §12. Nunca hay dos tareas actuales.
 
@@ -431,6 +432,7 @@ Toda modificación al plan se registra aquí. Una línea, con fecha y causa.
 | 2026-09-01 | v0.2.0: §13 reescrita con la especificación real de `AGENTS.md` y la distribución `.claude/` + `.agents/` | La convención de raíz es `AGENTS.md`, no un archivo por herramienta |
 | 2026-09-01 | v0.3.0: plan materializado en Tonal, §2 actualizado contra `origin/main` y `TAREA ACTUAL` avanzada al validador/generador de Tlaloc | Las referencias locales usadas por v0.1.0 estaban atrasadas; el ledger inicial de Tlaloc ya permite probar el siguiente gate |
 | 2026-09-01 | v0.4.0: `TAREA ACTUAL` avanzada al ledger de Origami | Tlaloc ya valida su ledger, genera `CAPABILITY_STATUS` y rechaza divergencia en CI mediante el commit local `9ba1a22` |
+| 2026-09-01 | v0.5.0: `TAREA ACTUAL` avanzada al ledger de Tonal y las contradicciones pasan a listas estructuradas pendientes | Origami ya separa 21 capacidades implementadas, 9 diseñadas y 5 discrepancias pendientes mediante el commit local `15820f3` |
 
 ---
 
