@@ -1,0 +1,52 @@
+[
+  {
+    "id": "TONAL-DISCREPANCY-001",
+    "status": "pending",
+    "summary": "The README current-pin section disagrees with the composition manifest and lock.",
+    "observed": [
+      "README.md declares Tlaloc 6.0.0-alpha.14 at 9b83e76f33c888b8701d3ab6a48049425ba7b8e8.",
+      "TONAL.json and tonal.lock declare Tlaloc 6.0.0-alpha.15 at 349deaef6f6c94966c814f9f99a1ec1fb78b875f.",
+      "README.md declares Origami 6.0.0-alpha.10 at fe4ba64ef35dc900c84fa5c20c9afad4fceee173.",
+      "TONAL.json and tonal.lock declare Origami 6.0.0-alpha.12 at 12176e6829e8cd0aaaa1db03f0b2cc4f4d5ea838."
+    ],
+    "sources": [
+      "README.md#current-exact-pins",
+      "TONAL.json",
+      "tonal.lock"
+    ],
+    "closure_condition": "Choose the authoritative current-pin source, generate or synchronize the README section from it, and make the coherence gate reject future drift.",
+    "related_claims": [
+      "TONAL.COMPOSITION.LOCK_VERSION_COHERENCE"
+    ],
+    "last_checked": "2026-09-01"
+  },
+  {
+    "id": "TONAL-DISCREPANCY-002",
+    "status": "pending",
+    "summary": "Repository documentation and metadata label several facilities implemented or verified, but the claims policy cannot promote them without go test ./... evidence.",
+    "observed": [
+      "TONAL.json labels the snapshot builder IMPLEMENTED and compatibility.json labels the current composition COMPOSITION_VERIFIED.",
+      "README.md describes revision updates, exact-component verification, snapshot building, and repo-flow distribution as operational capabilities.",
+      "Tonal has shell and Python tests but no Go module or tests executed by go test ./..., which section 4.4 requires for implemented status."
+    ],
+    "sources": [
+      "TONAL.json",
+      "compatibility.json",
+      "README.md",
+      "scripts/",
+      "tests/",
+      "docs/EVIDENCE_PLAN.md#44-estados-y-regla-de-promocion"
+    ],
+    "closure_condition": "Either add qualifying Go tests for each promoted claim or explicitly amend the ledger policy to accept deterministic non-Go tests before changing any claim status.",
+    "related_claims": [
+      "TONAL.COMPONENT.REVISION_RESOLUTION",
+      "TONAL.COMPOSITION.LOCK_VERSION_COHERENCE",
+      "TONAL.DISTRIBUTION.REPO_FLOW",
+      "TONAL.COMPONENT.EXACT_IDENTITY_VERIFICATION",
+      "TONAL.COMPOSITION.DECLARED_VERIFICATION",
+      "TONAL.SNAPSHOT.REPRODUCIBLE_DISTRIBUTION",
+      "TONAL.POLICY.GATEKEEPER_DISTRIBUTION"
+    ],
+    "last_checked": "2026-09-01"
+  }
+]

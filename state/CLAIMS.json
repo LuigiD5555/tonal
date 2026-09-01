@@ -1,0 +1,65 @@
+[
+  {
+    "id": "TONAL.COMPONENT.REVISION_RESOLUTION",
+    "statement": "Resolve a declared component revision to an immutable commit and update its version and pin coherently in the composition manifest and lock.",
+    "status": "designed",
+    "evidence": [],
+    "version_introduced": "0.1.0-alpha.5",
+    "last_checked": "2026-09-01",
+    "notes": "scripts/update-component.sh implements this path, but no test executed by go test ./... establishes the contract required for implemented status."
+  },
+  {
+    "id": "TONAL.COMPOSITION.LOCK_VERSION_COHERENCE",
+    "statement": "Reject disagreement between Tonal VERSION, TONAL.json, tonal.lock, component identity fields, and the allowed component-kind contract.",
+    "status": "designed",
+    "evidence": [],
+    "version_introduced": "0.1.0-alpha.1",
+    "last_checked": "2026-09-01",
+    "notes": "scripts/verify-lock.sh and tests/test-manifest.sh exercise part of this contract as shell tests, but Tonal has no go test ./... evidence and the current verifier does not yet cover README or the claims ledger."
+  },
+  {
+    "id": "TONAL.DISTRIBUTION.REPO_FLOW",
+    "statement": "Distribute repo-flow from one canonical Tonal source to byte-identical Claude and Agents mirrors with controlled project installation.",
+    "status": "designed",
+    "evidence": [],
+    "version_introduced": "0.1.0-alpha.2",
+    "last_checked": "2026-09-01",
+    "notes": "scripts/sync-skills.sh, scripts/install-skill.sh, and tests/test-skills.sh implement and shell-test the path, but no test executed by go test ./... satisfies the ledger promotion rule."
+  },
+  {
+    "id": "TONAL.COMPONENT.EXACT_IDENTITY_VERIFICATION",
+    "statement": "Verify that each fetched component checkout matches the exact commit and component version declared by tonal.lock.",
+    "status": "designed",
+    "evidence": [],
+    "version_introduced": "0.1.0-alpha.1",
+    "last_checked": "2026-09-01",
+    "notes": "scripts/fetch-components.sh and scripts/verify-components.sh implement the mechanism, but the repository has no qualifying go test ./... evidence."
+  },
+  {
+    "id": "TONAL.COMPOSITION.DECLARED_VERIFICATION",
+    "statement": "Execute each component verification command declared in TONAL.json against the corresponding exact locked checkout.",
+    "status": "designed",
+    "evidence": [],
+    "version_introduced": "0.1.0-alpha.5",
+    "last_checked": "2026-09-01",
+    "notes": "scripts/verify-stack.sh implements this orchestration, but no qualifying go test ./... establishes the complete contract."
+  },
+  {
+    "id": "TONAL.SNAPSHOT.REPRODUCIBLE_DISTRIBUTION",
+    "statement": "Build a source snapshot containing all exact locked components plus Tonal composition metadata and shared workflow assets.",
+    "status": "designed",
+    "evidence": [],
+    "version_introduced": "0.1.0-alpha.5",
+    "last_checked": "2026-09-01",
+    "notes": "scripts/build-snapshot.sh and TONAL.json describe an implemented builder, but no qualifying go test ./... proves reproducibility of the produced archive."
+  },
+  {
+    "id": "TONAL.POLICY.GATEKEEPER_DISTRIBUTION",
+    "statement": "Keep Gatekeeper policy authoritative in Tonal and distribute byte-identical workflow mirrors without transferring component semantic authority.",
+    "status": "designed",
+    "evidence": [],
+    "version_introduced": "0.1.0-alpha.4",
+    "last_checked": "2026-09-01",
+    "notes": "The policy, canonical skill, mirrors, and shell tests exist, but no qualifying go test ./... establishes this contract."
+  }
+]
