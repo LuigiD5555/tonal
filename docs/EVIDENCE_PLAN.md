@@ -1,6 +1,6 @@
 # EVIDENCE_PLAN — Plan de cierre de discrepancia
 
-**Versión del plan:** 0.7.0
+**Versión del plan:** 0.8.0
 **Fecha de corte:** 2026-09-01
 **Autoridad:** este documento es la fuente de verdad del *plan*. No es fuente de verdad del *estado*.
 **Ámbito:** stack `tlaloc` + `origami` + `tonal`.
@@ -57,12 +57,12 @@ Terminar a medias y decirlo es un resultado válido. Terminar a medias y no deci
 
 ### TAREA ACTUAL
 
-> **Semana 3 — Trayectorias y gates C1/C2.**
+> **Semana 4 — Markov mínimo.**
 >
-> Emitir los eventos de §6.2 dentro de `trace[]` del Run Record desde la ruta existente de `realcampaign`; no crear un log de trayectorias paralelo.
-> Extender el gate de Tonal para cumplir C1 y C2: rechazar deriva entre superficies de versión/lock/ledger y rechazar todo claim con status `evidenced` o `evidenced_failing` cuyo `run_id` no exista.
-> Añadir pruebas negativas que demuestren ambos rechazos y conservar el replay determinista de C3 verde.
-> No estimar todavía la matriz Markov ni usar ninguna transición para decidir.
+> Contar transiciones únicamente desde `trace[]` de Run Records comparables, agrupadas por `(modelo, perfil)` y restringidas a corridas que compartan `env_hash` según §7.
+> Estimar la matriz `P(s'|s)` por conteo directo, reportar siempre `n` junto a cada probabilidad y mantener el piso duro de `n >= 30` para cualquier transición que pueda alimentar una decisión.
+> Emitir el primer reporte que responda las cuatro preguntas de §7.3 sin introducir un MDP, recompensas, acciones aprendidas ni Behavior Lab de tres niveles.
+> Si el volumen real no alcanza el piso de conteo, declarar la capa insuficientemente evidenciada en lugar de bajar el umbral.
 
 Cuando la tarea cambie, se cambia **aquí** y se anota en §12. Nunca hay dos tareas actuales.
 
@@ -250,7 +250,7 @@ Capturar el entorno completo de cada corrida contra un modelo, de forma que sea 
     "compiled_prompt_hash": "sha256:..."
   },
 
-  "fixture": { "id": "...", "sha256": "..." },
+  "fixture": { "id": "...", "sha256": "sha256:..." },
 
   "host": {
     "os": "Manjaro 6.x",
@@ -365,9 +365,9 @@ Números que hoy no existen y que valen más que arquitectura nueva:
 
 El ciclo cierra cuando las cinco condiciones se cumplen simultáneamente:
 
-**C1.** Un comando de Tonal sale con código distinto de cero ante cualquier desacuerdo entre `VERSION`, `tonal.lock`, encabezados de README y el ledger. Extiende `scripts/verify-lock.sh`, no lo reemplaza.
+**C1.** Un comando de Tonal sale con código distinto de cero ante cualquier desacuerdo entre sus superficies `VERSION`, `README`, `TONAL.json`, `tonal.lock` y ledger. Para cada componente fijado por `tonal.lock`, el checkout exacto debe hacer coincidir `VERSION` y el encabezado del README con el lock. Si ese pin histórico contiene `state/CLAIMS.json`, el ledger y su tabla generada también se validan; la ausencia del ledger en una revisión anterior a su introducción no invalida retrospectivamente una composición fijada.
 
-**C2.** Toda afirmación con status ≥ `evidenced` apunta a al menos un `run_id` que existe en `runs/`. Verificable por script.
+**C2.** Toda afirmación con status `evidenced` o `evidenced_failing` apunta a al menos un `run_id` que existe en `runs/`. Verificable por script.
 
 **C3.** Una corrida cualquiera se re-ejecuta desde su propio `replay` y reproduce el mismo `env_hash`; en rutas deterministas, el mismo `output_hash`.
 
@@ -431,6 +431,7 @@ Toda modificación al plan se registra aquí. Una línea, con fecha y causa.
 | 2026-09-01 | v0.5.0: `TAREA ACTUAL` avanzada al ledger de Tonal y las contradicciones pasan a listas estructuradas pendientes | Origami ya separa 21 capacidades implementadas, 9 diseñadas y 5 discrepancias pendientes mediante el commit local `15820f3` |
 | 2026-09-01 | v0.6.0: cerrada Semana 1, ledger por componente con validación local y Tonal como verificador de composición; `TAREA ACTUAL` avanzada al Run Record base | Tlaloc, Origami y Tonal ya validan sus ledgers y rechazan deriva de las tablas generadas; se evita depender de un checkout vecino para validar estado local |
 | 2026-09-01 | v0.7.0: `TAREA ACTUAL` avanzada a trayectorias y gates C1/C2 | Tlaloc ya emite Run Records inmutables desde `realcampaign.Prepare`, calcula `env_hash`, mantiene `index.jsonl` y verifica replay determinista con el mismo `env_hash` y `output_hash` |
+| 2026-09-01 | v0.8.0: cerrada Semana 3 y `TAREA ACTUAL` avanzada a Markov mínimo; C1 aclara la semántica de pins históricos | `realcampaign.Prepare` ya registra su transición observada en `trace[]`; Tonal rechaza deriva de superficies y `run_id` inexistentes, mientras composiciones históricas anteriores al ledger siguen siendo válidas si sus superficies versionadas coinciden |
 
 ---
 
