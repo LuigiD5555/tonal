@@ -5,11 +5,13 @@ python3 - "$ROOT" <<'PY'
 import json, pathlib, re, sys
 root = pathlib.Path(sys.argv[1])
 version = (root / "VERSION").read_text().strip()
+readme = (root / "README.md").read_text()
 manifest = json.loads((root / "TONAL.json").read_text())
 lock = json.loads((root / "tonal.lock").read_text())
 assert manifest["schema"] == "tonal.composition.v2"
 assert lock["schema"] == "tonal.lock.v2"
 assert version == manifest["tonal"]["version"] == lock["tonal_version"]
+assert readme.startswith(f"# Tonal {version}\n")
 assert set(manifest["components"]) == set(lock["components"])
 allowed = set(manifest["composition_model"]["component_kinds"])
 for name in sorted(manifest["components"]):
@@ -29,3 +31,5 @@ assert "Blueprint Framework" in manifest["composition_model"]["unlocked_examples
 assert "blueprint" not in {name.lower() for name in lock["components"]}
 print(f"PASS Tonal {version}: generic manifest and lock are coherent")
 PY
+python3 "$ROOT/tools/claims.py" validate
+python3 "$ROOT/tools/claims.py" check

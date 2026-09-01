@@ -5,6 +5,7 @@ cd "$ROOT"
 chmod +x scripts/*.sh tests/*.sh
 
 tests/test-manifest.sh
+tests/test-claims.sh
 tests/test-skills.sh
 tests/test-gatekeeper.sh
 tests/test-fixed-carrier-r2.sh
