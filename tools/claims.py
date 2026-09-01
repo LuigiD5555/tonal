@@ -43,6 +43,7 @@ EVIDENCE_REQUIRED_STATUSES = {
     "evidenced_failing",
     "verified",
 }
+RUN_EVIDENCE_STATUSES = {"evidenced", "evidenced_failing"}
 TEST_REFERENCE_PATTERN = re.compile(
     r"^test:(?P<package_path>[^:]+):(?P<test_name>Test[A-Za-z0-9_]+)$"
 )
@@ -59,14 +60,14 @@ def load_claims(claims_path: Path) -> list[dict[str, Any]]:
     return claims_value
 
 
-def validate_test_reference(reference: str) -> list[str]:
+def validate_test_reference(reference: str, repository_root: Path) -> list[str]:
     reference_match = TEST_REFERENCE_PATTERN.fullmatch(reference)
     if reference_match is None:
         return [f"invalid test evidence reference: {reference}"]
 
-    package_path = (REPOSITORY_ROOT / reference_match["package_path"]).resolve()
+    package_path = (repository_root / reference_match["package_path"]).resolve()
     try:
-        package_path.relative_to(REPOSITORY_ROOT)
+        package_path.relative_to(repository_root)
     except ValueError:
         return [f"test evidence escapes repository root: {reference}"]
     if not package_path.is_dir():
@@ -82,10 +83,37 @@ def validate_test_reference(reference: str) -> list[str]:
     return [f"test evidence function does not exist: {reference}"]
 
 
-def validate_claims(claims: list[dict[str, Any]]) -> list[str]:
+def load_run_ids(repository_root: Path) -> set[str]:
+    runs_root = repository_root / "runs"
+    if not runs_root.is_dir():
+        return set()
+
+    run_ids: set[str] = set()
+    for run_path in sorted(runs_root.rglob("*.json")):
+        try:
+            run_value = json.loads(run_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        if isinstance(run_value, dict):
+            run_id = run_value.get("run_id")
+            if isinstance(run_id, str) and run_id:
+                run_ids.add(run_id)
+    return run_ids
+
+
+def validate_claims(
+    claims: list[dict[str, Any]], repository_root: Path = REPOSITORY_ROOT
+) -> list[str]:
     errors: list[str] = []
     if not claims:
         return ["claims ledger must not be empty"]
+
+    repository_root = repository_root.resolve()
+    needs_run_evidence = any(
+        isinstance(claim, dict) and claim.get("status") in RUN_EVIDENCE_STATUSES
+        for claim in claims
+    )
+    run_ids = load_run_ids(repository_root) if needs_run_evidence else set()
 
     observed_ids: set[str] = set()
     for claim_index, claim in enumerate(claims):
@@ -141,7 +169,7 @@ def validate_claims(claims: list[dict[str, Any]]) -> list[str]:
             reference.startswith("test:") for reference in evidence
         ):
             errors.append(f"{display_id} requires test evidence for implemented status")
-        if claim_status in {"evidenced", "evidenced_failing"} and not any(
+        if claim_status in RUN_EVIDENCE_STATUSES and not any(
             reference.startswith("run:") for reference in evidence
         ):
             errors.append(f"{display_id} requires run evidence for status {claim_status}")
@@ -151,9 +179,24 @@ def validate_claims(claims: list[dict[str, Any]]) -> list[str]:
         ):
             errors.append(f"{display_id} requires deterministic verification evidence")
 
+        run_references = [
+            reference[len("run:") :]
+            for reference in evidence
+            if reference.startswith("run:") and len(reference) > len("run:")
+        ]
+        if claim_status in RUN_EVIDENCE_STATUSES and run_references and not any(
+            run_id in run_ids for run_id in run_references
+        ):
+            errors.append(
+                f"{display_id} run evidence does not exist in runs/: "
+                + ", ".join(run_references)
+            )
+
         for evidence_reference in evidence:
             if evidence_reference.startswith("test:"):
-                errors.extend(validate_test_reference(evidence_reference))
+                errors.extend(
+                    validate_test_reference(evidence_reference, repository_root)
+                )
             elif ":" not in evidence_reference:
                 errors.append(f"invalid evidence reference: {evidence_reference}")
 
@@ -230,17 +273,20 @@ def main() -> None:
     parser.add_argument("command", choices=("validate", "generate", "check"))
     parser.add_argument("--claims", type=Path, default=DEFAULT_CLAIMS_PATH)
     parser.add_argument("--document", type=Path, default=DEFAULT_DOCUMENT_PATH)
+    parser.add_argument("--repository-root", type=Path, default=REPOSITORY_ROOT)
     arguments = parser.parse_args()
 
+    claims_path = arguments.claims.resolve()
+    repository_root = arguments.repository_root.resolve()
     try:
-        claims = load_claims(arguments.claims.resolve())
+        claims = load_claims(claims_path)
     except ValueError as error:
         fail([str(error)])
-    validation_errors = validate_claims(claims)
+    validation_errors = validate_claims(claims, repository_root)
     if validation_errors:
         fail(validation_errors)
     if arguments.command == "validate":
-        emit_result("validate", claims)
+        emit_result("validate", claims, repository_root=str(repository_root))
         return
 
     table_text = render_table(claims)
