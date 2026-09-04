@@ -21,9 +21,9 @@
   "components": {
     "tlaloc": {
       "kind": "development_tool",
-      "version": "6.0.0-alpha.15",
+      "version": "6.0.0-alpha.21",
       "repository": "https://github.com/LuigiD5555/tlaloc.git",
-      "commit": "349deaef6f6c94966c814f9f99a1ec1fb78b875f",
+      "commit": "31093999de450259f1825b5cbd438b887bde325c",
       "authority": "behavioral development, bounded Tlaloque swarm experiments, prompt-first distillation, failure-to-regression conversion and target-specific development laboratories",
       "role": "optional development kit",
       "verification": [
@@ -61,7 +61,9 @@
       "Tonal can compose Tlaloc, Blueprint Framework or other development systems once exact pins are supplied; unpinned examples are never treated as installed components.",
       "A Tonal verification proves the declared composition is reproducible and its configured checks pass. It does not promote Origami semantics, visual profiles or model capabilities.",
       "A Tonal composition references exact commits, never floating branches.",
-      "The current composition includes the failure-driven Native semantic regression tooling in Tlaloc alpha.15 and the matching semantic-first T2 correction in Origami alpha.12; this composition does not claim held-out VLM success."
+      "The current composition includes the failure-driven Native semantic regression tooling in Tlaloc alpha.15 and the matching semantic-first T2 correction in Origami alpha.12; this composition does not claim held-out VLM success.",
+      "As of 2026-09-03 the Tlaloc pin advances to alpha.21 commit 3109399 (TLALOC_T1_QUALIFIED_EXECUTOR_COMMIT): additive on the frozen Phase P/H baseline 445b18c. It adds tlaloquekit (the public contract, split from tlaloquekit/tlalocregistry which does the internal wiring), the deterministic ARITHMETIC Tlaloque, and the R1-aware Parrot Tlaloque (loads and hash-validates CapabilityProfile R1, runs AdapterR1 before at most one model call). An intermediate publication-surface commit b22b856 preceded it. CapabilityProfile R1 (hash 8acc959b) is unchanged.",
+      "TONAL T1 introduces a new runtime subsystem under runtime/ (module tonal.local/runtime) that consumes qualified Tlaloques via tlaloc.local/behaviorlab/tlaloquekit. The historical composition/pinning/snapshot/evidence layer at the repository root is unchanged and remains reproducibility infrastructure; the runtime subsystem is the cognitive/computational TONAL authority. See docs/TONAL_SYSTEM_BOUNDARY_R1.md."
     ]
   },
   "invariants": [

@@ -1,0 +1,226 @@
+package tonal
+
+import (
+	"context"
+	"encoding/json"
+	"strings"
+	"testing"
+
+	"tlaloc.local/behaviorlab/tlaloquekit"
+)
+
+// fakeRegistry is a deterministic in-memory QualifiedRegistry. It lets the
+// TONAL runtime be exercised with no Tlaloc dependency and no model.
+type fakeRegistry struct {
+	descriptors map[string][]tlaloquekit.Descriptor // capability -> candidates (first = selected)
+	exec        func(req tlaloquekit.ExecutionRequest) (tlaloquekit.ExecutionResult, error)
+}
+
+func (f *fakeRegistry) Capabilities() []tlaloquekit.Descriptor {
+	var out []tlaloquekit.Descriptor
+	for _, list := range f.descriptors {
+		out = append(out, list...)
+	}
+	return out
+}
+
+func (f *fakeRegistry) Candidates(capability string, _ tlaloquekit.Goal) []tlaloquekit.Candidate {
+	list := f.descriptors[strings.ToUpper(capability)]
+	out := make([]tlaloquekit.Candidate, 0, len(list))
+	for index, descriptor := range list {
+		out = append(out, tlaloquekit.Candidate{
+			Descriptor: descriptor,
+			Selected:   index == 0,
+			Reason:     "fake",
+		})
+	}
+	return out
+}
+
+func (f *fakeRegistry) Resolve(goal tlaloquekit.Goal, planID string, _ int) (tlaloquekit.Resolution, error) {
+	list := f.descriptors[strings.ToUpper(goal.Capability)]
+	if len(list) == 0 {
+		return tlaloquekit.Resolution{}, nil
+	}
+	return tlaloquekit.Resolution{
+		Goal: goal, PlanID: planID,
+		Nodes:    []tlaloquekit.PlanNode{{ID: planID + "-n0", Capability: goal.Capability, WorkerID: list[0].ID}},
+		Selected: []tlaloquekit.Descriptor{list[0]},
+	}, nil
+}
+
+func (f *fakeRegistry) Execute(_ context.Context, req tlaloquekit.ExecutionRequest) (tlaloquekit.ExecutionResult, error) {
+	return f.exec(req)
+}
+
+func (f *fakeRegistry) ParrotProfileID() string   { return "" }
+func (f *fakeRegistry) ParrotProfileHash() string { return "" }
+
+func observationOf(req tlaloquekit.ExecutionRequest, engine tlaloquekit.EngineKind, value any) tlaloquekit.ExecutionResult {
+	raw, _ := json.Marshal(value)
+	kind := "OBSERVATION"
+	if req.Capability == "VERIFY" {
+		kind = "FACT"
+	}
+	return tlaloquekit.ExecutionResult{
+		WorkerID: req.WorkerID,
+		Output:   raw,
+		Observations: []tlaloquekit.Observation{{
+			Producer: req.WorkerID, Capability: req.Capability, Key: req.NodeID,
+			Value: raw, Kind: kind, Confidence: 1,
+		}},
+		Usage: usageFor(engine),
+	}
+}
+
+func usageFor(engine tlaloquekit.EngineKind) *tlaloquekit.Usage {
+	if engine == tlaloquekit.EngineGenerative {
+		return &tlaloquekit.Usage{ModelCalls: 1, PromptTokens: 10, CompletionTokens: 2}
+	}
+	return nil
+}
+
+func depth4Family() TaskFamily {
+	return TaskFamily{
+		ID:   "LOCATE_EXTRACT_NORMALIZE_COMPARE",
+		Goal: "read a value and compare it with a threshold",
+		Steps: []Step{
+			{LocalID: "locate", Capability: "LOCATE_REGION", Input: InputSpec{Template: map[string]any{
+				"mode": "REAL", "question": "${param:question}", "store_dir": "${param:store_dir}",
+			}}},
+			{LocalID: "extract", Capability: "EXTRACT_NUMBER", DependsOn: []string{"locate"}, Input: InputSpec{Template: map[string]any{
+				"image_path": "${param:page_image}", "region": "${obs:locate}",
+			}}},
+			{LocalID: "normalize", Capability: "NORMALIZE", DependsOn: []string{"extract"}, Input: InputSpec{Template: map[string]any{
+				"raw": "${obs:extract:text}", "target_type": "number",
+			}}},
+			{LocalID: "compare", Capability: "COMPARE_NUMBERS", DependsOn: []string{"normalize"}, Input: InputSpec{Template: map[string]any{
+				"a": "${obs:normalize:trimmed}", "b": "${param:threshold}",
+			}}},
+		},
+	}
+}
+
+func TestCriticalPathDepthIsMechanical(t *testing.T) {
+	if got := depth4Family().CriticalPathDepth(); got != 4 {
+		t.Fatalf("critical path depth = %d, want 4", got)
+	}
+}
+
+func TestRunWorkflow_HeterogeneousArm_ChainsObservationsAndTraces(t *testing.T) {
+	registry := &fakeRegistry{
+		descriptors: map[string][]tlaloquekit.Descriptor{
+			"LOCATE_REGION":   {{ID: "region-locate-tlaloque", Capability: "LOCATE_REGION", Engine: tlaloquekit.EngineDeterministic, Deterministic: true}},
+			"EXTRACT_NUMBER":  {{ID: "parrot-tlaloque:lfm2:EXTRACT_NUMBER", Capability: "EXTRACT_NUMBER", Engine: tlaloquekit.EngineGenerative, ProfileRef: "parrot-lfm2-vl-1.6b@r1.0.0"}},
+			"NORMALIZE":       {{ID: "normalize-tlaloque", Capability: "NORMALIZE", Engine: tlaloquekit.EngineDeterministic, Deterministic: true}},
+			"COMPARE_NUMBERS": {{ID: "numeric-tlaloque", Capability: "COMPARE_NUMBERS", Engine: tlaloquekit.EngineDeterministic, Deterministic: true}},
+		},
+		exec: func(req tlaloquekit.ExecutionRequest) (tlaloquekit.ExecutionResult, error) {
+			switch req.Capability {
+			case "LOCATE_REGION":
+				return observationOf(req, tlaloquekit.EngineDeterministic, map[string]any{"selected_address": "ohf://doc/pages/000100", "page": 100}), nil
+			case "EXTRACT_NUMBER":
+				return observationOf(req, tlaloquekit.EngineGenerative, map[string]any{"text": "512"}), nil
+			case "NORMALIZE":
+				return observationOf(req, tlaloquekit.EngineDeterministic, map[string]any{"trimmed": "512", "is_number": true}), nil
+			case "COMPARE_NUMBERS":
+				return observationOf(req, tlaloquekit.EngineDeterministic, map[string]any{"comparison": "GREATER"}), nil
+			}
+			return tlaloquekit.ExecutionResult{}, nil
+		},
+	}
+
+	engine := &Engine{Registry: registry}
+	instance := Instance{
+		ID: "wf-001", Family: "LOCATE_EXTRACT_NORMALIZE_COMPARE", DeclaredDepth: 4,
+		Params: map[string]string{
+			"question": "what is the FashionMNIST training set size", "store_dir": "/store",
+			"page_image": "/img/p100.png", "threshold": "100",
+		},
+	}
+
+	record, blackboard, err := engine.RunWorkflow(context.Background(), depth4Family(), instance, HeterogeneousPolicy{})
+	if err != nil {
+		t.Fatalf("RunWorkflow: %v", err)
+	}
+	if record.FinalStatus != "OK" {
+		t.Fatalf("final status = %q (%s)", record.FinalStatus, record.Error)
+	}
+	if len(record.Steps) != 4 {
+		t.Fatalf("expected 4 step traces, got %d", len(record.Steps))
+	}
+
+	// observation chaining: normalize must have read the extract output
+	normalize := record.Steps[2]
+	if normalize.InputJSON == "" || !strings.Contains(normalize.InputJSON, `"512"`) {
+		t.Fatalf("normalize did not receive the extracted value: %s", normalize.InputJSON)
+	}
+	if len(normalize.BlackboardReads) == 0 {
+		t.Fatalf("normalize step recorded no blackboard reads")
+	}
+
+	// accounting: exactly one generative (Parrot) call across the workflow
+	if record.Accounting.ParrotCalls != 1 || record.Accounting.GenerativeCalls != 1 {
+		t.Fatalf("accounting parrot=%d generative=%d, want 1/1", record.Accounting.ParrotCalls, record.Accounting.GenerativeCalls)
+	}
+	if record.Accounting.DeterministicOps != 3 {
+		t.Fatalf("expected 3 deterministic ops, got %d", record.Accounting.DeterministicOps)
+	}
+	if len(blackboard.Keys()) != 4 {
+		t.Fatalf("expected 4 blackboard keys, got %v", blackboard.Keys())
+	}
+}
+
+func TestRunWorkflow_ParrotCentricArm_ForcesGenerativeForCognitiveCaps(t *testing.T) {
+	registry := &fakeRegistry{
+		descriptors: map[string][]tlaloquekit.Descriptor{
+			"LOCATE_REGION": {{ID: "region-locate-tlaloque", Capability: "LOCATE_REGION", Engine: tlaloquekit.EngineDeterministic, Deterministic: true}},
+			"NORMALIZE": {
+				{ID: "normalize-tlaloque", Capability: "NORMALIZE", Engine: tlaloquekit.EngineDeterministic, Deterministic: true},
+				{ID: "parrot-tlaloque:lfm2:NORMALIZE", Capability: "NORMALIZE", Engine: tlaloquekit.EngineGenerative},
+			},
+		},
+		exec: func(req tlaloquekit.ExecutionRequest) (tlaloquekit.ExecutionResult, error) {
+			engine := tlaloquekit.EngineDeterministic
+			if strings.HasPrefix(req.WorkerID, "parrot") {
+				engine = tlaloquekit.EngineGenerative
+			}
+			return observationOf(req, engine, map[string]any{"trimmed": "7"}), nil
+		},
+	}
+	family := TaskFamily{ID: "F", Goal: "g", Steps: []Step{
+		{LocalID: "locate", Capability: "LOCATE_REGION", Input: InputSpec{Template: map[string]any{"mode": "REAL", "question": "${param:q}", "store_dir": "/s"}}},
+		{LocalID: "normalize", Capability: "NORMALIZE", DependsOn: []string{"locate"}, Input: InputSpec{Template: map[string]any{"raw": "7", "target_type": "number"}}},
+	}}
+	policy := ParrotCentricPolicy{CognitiveCapabilities: map[string]bool{"NORMALIZE": true}}
+
+	record, _, err := (&Engine{Registry: registry}).RunWorkflow(context.Background(), family, Instance{ID: "wf", Params: map[string]string{"q": "x"}}, policy)
+	if err != nil {
+		t.Fatalf("RunWorkflow: %v", err)
+	}
+	if got := record.Steps[0].SelectedWorker; got != "region-locate-tlaloque" {
+		t.Fatalf("locate should stay deterministic, got %q", got)
+	}
+	if got := record.Steps[1].SelectedWorker; got != "parrot-tlaloque:lfm2:NORMALIZE" {
+		t.Fatalf("arm B must force NORMALIZE to the generative executor, got %q", got)
+	}
+	if record.Accounting.ParrotCalls != 1 {
+		t.Fatalf("arm B parrot calls = %d, want 1", record.Accounting.ParrotCalls)
+	}
+}
+
+func TestRunWorkflow_UnavailableCapabilityIsAContractFailureNotAPanic(t *testing.T) {
+	registry := &fakeRegistry{descriptors: map[string][]tlaloquekit.Descriptor{}, exec: func(tlaloquekit.ExecutionRequest) (tlaloquekit.ExecutionResult, error) {
+		return tlaloquekit.ExecutionResult{}, nil
+	}}
+	family := TaskFamily{ID: "F", Goal: "g", Steps: []Step{
+		{LocalID: "s", Capability: "SUMMARIZE", Input: InputSpec{Template: map[string]any{}}},
+	}}
+	record, _, err := (&Engine{Registry: registry}).RunWorkflow(context.Background(), family, Instance{ID: "wf"}, HeterogeneousPolicy{})
+	if err != nil {
+		t.Fatalf("RunWorkflow returned a hard error: %v", err)
+	}
+	if record.FinalStatus != "CONTRACT_FAILURE" {
+		t.Fatalf("final status = %q, want CONTRACT_FAILURE", record.FinalStatus)
+	}
+}
