@@ -1,0 +1,32 @@
+name: prototype-fast
+
+on:
+  pull_request:
+    paths:
+      - "runtime/experience/**"
+      - "runtime/go.mod"
+      - "TONAL.json"
+      - "tonal.lock"
+      - ".github/workflows/prototype-fast.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  experience:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff
+        with:
+          go-version: "1.23.12"
+          cache: false
+      - name: Fetch exact component pins
+        run: bash scripts/fetch-components.sh
+      - name: Test TONAL experience adapter
+        working-directory: runtime
+        run: go test ./experience
+      - name: Vet TONAL experience adapter
+        working-directory: runtime
+        run: go vet ./experience
