@@ -1,174 +1,121 @@
-# Tonal 0.1.0-alpha.5
+# Tonal — Architecture R2 foundation
 
-Tonal is an optional **composition, compatibility, provenance and distribution layer for development toolchains and targets**.
+Tonal is an experimental **heterogeneous cognitive/runtime system** for composing bounded, measurable capabilities into verified workflows.
 
-It exists so independently versioned development systems and target projects can be combined reproducibly without pretending they share one codebase or one semantic authority.
+The core research question is whether complex, reliable behavior can emerge from external structure, specialization, verification, memory and reusable experience instead of requiring one increasingly complex general-purpose model to perform every operation.
 
-## Composition model
-
-Tonal v2 recognizes generic component kinds:
+## Canonical roles
 
 ```text
-development_tool
-target
-support
+TONAL
+  complete runtime/research system
+  goal -> DAG -> select -> execute -> verify -> Episode
+
+TLALOC
+  capability foundry + Behavior Lab
+  build -> test -> qualify -> promote/deprecate
+
+TLALOQUE
+  one bounded typed measurable capability
+
+PARROT
+  one probabilistic Tlaloque
+  no system-level authority
+
+SHPONGLESE
+  semantic operational IR
+
+ORIGAMI
+  optional representation / transport / virtual-memory substrate
 ```
 
-The current locked composition contains:
+Parrot is useful where probabilistic perception, extraction, interpretation or generation is actually needed. It is **not** Tonal's brain, router, verifier, memory or default executor for every task.
+
+## Runtime
+
+The T1 runtime introduced the system boundary now promoted by Architecture R2:
 
 ```text
-Tlaloc  -> development_tool
-Origami -> target
+goal / task family
+       ↓
+workflow DAG
+       ↓
+qualified capability candidates
+       ↓
+SelectionPolicy
+       ↓
+executor
+       ↓
+Blackboard + verification + accounting
+       ↓
+RunRecord / Episode-compatible evidence
 ```
 
-Blueprint Framework is an example of another development tool that Tonal may compose later. It is **not currently locked** because no repository/version/SHA has been supplied in this composition. Tonal never invents a component pin from a conceptual example.
+See `runtime/` and `docs/ARCHITECTURE.md`.
 
-## Ecosystem role
+## T1 remains frozen
+
+T1 asks whether heterogeneous composition degrades less with workflow depth than monolithic Parrot or a decomposed-but-Parrot-centric workflow.
+
+Architecture R2 does not retrofit new research ideas into T1. Frozen T1 artifacts and experiment semantics remain authoritative for T1.
+
+## Research program
+
+Post-T1 research is organized around falsifiable mechanisms rather than copying large architectures:
+
+1. **T2 Primitive Swarm / MICRO-ISA** — can a small set of bounded primitives compose into a much larger behavior space?
+2. **T3 Selective / Frugal Compute** — can Tonal activate only the minimum sufficient capabilities?
+3. **T4 Cognitive JIT** — can verified Episodes become cheaper reusable capabilities through Tlaloc?
+4. **T5 Shponglese** — can a primitive/motif IR generalize compositionally and remain codec-invariant?
+5. **T6 Origami carrier/memory** — can Origami transport/address the same semantics more effectively than conventional codecs under fair anti-prior controls?
+
+See `docs/RESEARCH_PROGRAM.md` and `docs/research/PAPER_MAP.md`.
+
+## Historical composition infrastructure
+
+Tonal originally existed primarily as an optional composition, compatibility, provenance and snapshot layer. That machinery remains useful infrastructure and is retained:
 
 ```text
-                    TONAL (optional)
-          exact pins / checks / provenance / snapshot
-            /                 |                 \
-       TLALOC          Blueprint Framework     other tools
- development_tool       possible future         ...
-            \                 |                 /
-             \------ development ecosystem ---/
-                            |
-                            v
-                         ORIGAMI
-                           target
-                 owns its own releases
+TONAL.json
+tonal.lock
+compatibility.json
+gatekeeper.json
+scripts/fetch-components.sh
+scripts/verify-components.sh
+scripts/build-snapshot.sh
 ```
 
-Tonal is not required to run Tlaloc or Origami.
+The change in Architecture R2 is one of hierarchy: composition/pinning/provenance are **part of Tonal**, not the complete definition of Tonal.
 
-## Authority rule
+The exact pre-R2 project boundary is preserved under `docs/archive/superseded-architecture/`.
 
-```text
-Development tool
-  -> develops / experiments / proposes / produces evidence
+## Exact component pins
 
-Target project
-  -> owns its semantics, contracts and releases
-
-Tonal
-  -> pins exact revisions
-  -> verifies the declared composition
-  -> records provenance
-  -> builds reproducible snapshots
-```
-
-For Origami:
-
-```text
-Tlaloc / another development tool
-        ↓
-candidate + evidence
-        ↓
-Origami validation/adoption
-        ↓
-Origami release/profile
-        ↓
-optional Tonal composition/pin
-```
-
-Therefore:
-
-```text
-TONAL COMPOSITION != ORIGAMI PROFILE PROMOTION
-TONAL VERIFICATION != UNIVERSAL MODEL CAPABILITY
-TLALOC != REQUIRED ORIGAMI RUNTIME
-```
-
-## Generic component manifest
-
-`TONAL.json` now declares each component's:
-
-```text
-kind
-repository
-version
-immutable commit
-authority/role
-deterministic verification commands
-```
-
-`tonal.lock` mirrors the immutable identity fields.
-
-Adding a future development tool no longer requires teaching Tonal that the only valid names are `tlaloc` and `origami`. A tool first has to be explicitly registered and pinned; only then is it part of the composition.
+`TONAL.json` and `tonal.lock` remain the machine-readable authority for the exact external component revisions used by a composition or frozen experiment. Do not infer current pins from prose in this README.
 
 ## Verification
+
+Historical composition verification remains available:
 
 ```bash
 ./scripts/verify-stack.sh
 ```
 
-Verification does four distinct things:
+The runtime Go module is under `runtime/`. It consumes the exact Tlaloc revision materialized by the repository's component-fetch workflow.
 
-1. verifies manifest/lock coherence and component kinds;
-2. fetches the exact immutable component commits;
-3. verifies each checkout's commit/version identity;
-4. executes the component-specific deterministic checks declared in `TONAL.json`.
+## Documentation authority
 
-Historical Fixed Carrier R2 regression gates are retained as additional evidence rather than deleted.
+Start with:
 
-A green result means:
+1. `CLAUDE.md`
+2. this `README.md`
+3. `docs/CURRENT_STATE.md`
+4. `docs/ARCHITECTURE.md`
+5. `docs/BOUNDARIES.md`
+6. the active experiment specification
 
-```text
-COMPOSITION_VERIFIED
-```
+Anything under `docs/archive/` is historical and not current architectural authority.
 
-It does **not** mean that Origami Native visual support, Hybrid support or another empirical capability has been promoted.
+## Core invariant
 
-## Generic snapshots
-
-```bash
-./scripts/build-snapshot.sh
-```
-
-The snapshot builder now includes **every component in `tonal.lock`**, rather than hard-coding directories for only Tlaloc and Origami.
-
-The result remains a reproducible distribution artifact, not a new source repository.
-
-## Component operations
-
-```bash
-./scripts/component-status.sh
-./scripts/update-component.sh <declared-component> [revision]
-```
-
-`update-component.sh` accepts any component already declared in the manifest. It refuses unknown names instead of silently creating an ungoverned component.
-
-## Current exact pins
-
-At this branch stage:
-
-```text
-Tlaloc  6.0.0-alpha.14
-9b83e76f33c888b8701d3ab6a48049425ba7b8e8
-
-Origami 6.0.0-alpha.10
-fe4ba64ef35dc900c84fa5c20c9afad4fceee173
-```
-
-The Origami pin will only advance when the pending portable-baseline release is actually merged and green; Tonal will not pin an unmerged branch as a released target revision.
-
-## Shared workflow
-
-Tonal remains the canonical distribution owner for project-agnostic `repo-flow` and related shared integration/Gatekeeper workflow assets where those are used.
-
-That ownership concerns repository workflow and composition. It does not transfer semantic authority from component repositories.
-
-## Hard boundaries
-
-```text
-COMPONENT REPOSITORIES REMAIN AUTHORITATIVE
-TARGET REPOSITORY OWNS TARGET RELEASES
-TONAL IS OPTIONAL
-UNPINNED TOOL != COMPOSITION COMPONENT
-SNAPSHOT REFERENCES EXACT COMMITS
-DECLARED COMPONENT VERIFICATION MUST PASS
-TONAL COMPOSITION != TARGET PROMOTION
-```
-
-See `PROJECT_BOUNDARY.md`, `TONAL.json`, `tonal.lock` and `compatibility.json`.
+> Prefer the smallest reliable capability that satisfies the required behavior, evidence threshold and resource budget.
