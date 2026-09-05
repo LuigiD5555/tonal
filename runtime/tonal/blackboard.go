@@ -1,56 +1,44 @@
 // Package tonal is the TONAL runtime: goal intake, workflow/DAG expansion,
 // capability resolution and routing, the scheduler/execution loop, the
-// Blackboard, resource accounting and the deterministic routing trace.
-//
-// It depends only on the public tlaloquekit.QualifiedRegistry contract. It
-// holds no executor-specific knowledge: nothing in this package knows a
-// particular model's pixel scale or cropping policy. A Tlaloque enforces
-// its own competence envelope inside Execute.
+// Blackboard, resource accounting and deterministic routing trace.
 package tonal
 
 import (
 	"sort"
 	"strings"
-
-	"tlaloc.local/behaviorlab/tlaloquekit"
 )
 
-// Blackboard is TONAL's append-only observation ledger. Every Tlaloque
-// result lands here as a typed Observation with full provenance; a
-// deterministic derived value keeps provenance back to its source
-// observations. TONAL owns this — no Tlaloque writes to it directly.
+// Blackboard is Tonal's append-only observation ledger. Results from
+// Tlaloques, Machines, Tools or Parrot land here through the Engine as typed
+// Observations with provenance. Executors never mutate the Blackboard
+// directly.
 type Blackboard struct {
 	taskID  string
-	entries []tlaloquekit.Observation
+	entries []Observation
 }
 
-// NewBlackboard creates an empty ledger for one workflow run.
 func NewBlackboard(taskID string) *Blackboard {
 	return &Blackboard{taskID: strings.TrimSpace(taskID)}
 }
 
-// TaskID reports the run this Blackboard belongs to.
 func (b *Blackboard) TaskID() string { return b.taskID }
 
-// Append records observations in order. Model output arrives here as an
-// OBSERVATION; it becomes a FACT only when a VERIFY Tlaloque emits one.
-func (b *Blackboard) Append(observations ...tlaloquekit.Observation) {
+func (b *Blackboard) Append(observations ...Observation) {
 	b.entries = append(b.entries, observations...)
 }
 
-// Snapshot returns a copy of every entry, oldest first.
-func (b *Blackboard) Snapshot() []tlaloquekit.Observation {
-	out := make([]tlaloquekit.Observation, len(b.entries))
+func (b *Blackboard) Snapshot() []Observation {
+	out := make([]Observation, len(b.entries))
 	copy(out, b.entries)
 	return out
 }
 
 // Latest returns the most recently appended entry for a key, preferring a
 // FACT over a raw OBSERVATION for the same key.
-func (b *Blackboard) Latest(key string) (tlaloquekit.Observation, bool) {
+func (b *Blackboard) Latest(key string) (Observation, bool) {
 	key = strings.TrimSpace(key)
-	var obs tlaloquekit.Observation
-	var fact tlaloquekit.Observation
+	var obs Observation
+	var fact Observation
 	haveObs, haveFact := false, false
 	for _, entry := range b.entries {
 		if entry.Key != key {
@@ -68,10 +56,9 @@ func (b *Blackboard) Latest(key string) (tlaloquekit.Observation, bool) {
 	if haveObs {
 		return obs, true
 	}
-	return tlaloquekit.Observation{}, false
+	return Observation{}, false
 }
 
-// Keys lists every distinct observation key, sorted.
 func (b *Blackboard) Keys() []string {
 	seen := map[string]struct{}{}
 	for _, entry := range b.entries {
