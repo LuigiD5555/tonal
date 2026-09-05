@@ -43,7 +43,7 @@ type Instance struct {
 
 // Engine is the TONAL scheduler/execution loop. It owns the Blackboard for
 // each run, resolves each step's executor through the Registry (optionally
-// nudged by the arm's RoutingPolicy), executes in dependency order, and
+// nudged by the active SelectionPolicy), executes in dependency order, and
 // emits the deterministic RunRecord.
 type Engine struct {
 	Registry tlaloquekit.QualifiedRegistry
@@ -60,8 +60,9 @@ func (e *Engine) now() time.Time {
 
 var placeholderPattern = regexp.MustCompile(`\$\{(param|obs|node):([a-zA-Z0-9_.-]+)(?::([a-zA-Z0-9_.-]+))?\}`)
 
-// RunWorkflow executes one workflow instance under one routing policy and
-// returns the trace plus the Blackboard it produced.
+// RunWorkflow executes one workflow instance under one selection policy and
+// returns the trace plus the Blackboard it produced. RoutingPolicy remains a
+// compatibility alias for the T1-era API name.
 func (e *Engine) RunWorkflow(ctx context.Context, family TaskFamily, instance Instance, policy RoutingPolicy) (RunRecord, *Blackboard, error) {
 	family, err := family.Normalize()
 	if err != nil {
@@ -95,20 +96,23 @@ func (e *Engine) RunWorkflow(ctx context.Context, family TaskFamily, instance In
 			NodeID:     nodeID,
 		}
 
-		// --- resolution / routing ---
+		// --- resolution / selection ---
 		goal := tlaloquekit.Goal{Capability: step.Capability, PreferDeterministic: step.PreferDeterministic}
-		candidates := e.Registry.Candidates(step.Capability, goal)
-		stepTrace.Candidates = candidates
-		if len(candidates) == 0 {
+		registryCandidates := e.Registry.Candidates(step.Capability, goal)
+		stepTrace.Candidates = registryCandidates
+		if len(registryCandidates) == 0 {
 			stepTrace.Error = "CAPABILITY_UNAVAILABLE: no qualified executor for " + step.Capability
 			record.Steps = append(record.Steps, stepTrace)
 			record.Accounting.recordStep(stepTrace, false)
 			return finish(record, blackboard, "CONTRACT_FAILURE", stepTrace.Error), blackboard, nil
 		}
 
-		workerID, reason := policy.SelectWorker(step, candidates)
+		// SelectionPolicy receives TONAL-owned candidate data instead of the
+		// Registry implementation's candidate type. The original candidates
+		// remain in the trace and execution bridge for T1 compatibility.
+		workerID, reason := policy.SelectWorker(step, capabilityCandidates(registryCandidates))
 		if workerID == "" {
-			for _, candidate := range candidates {
+			for _, candidate := range registryCandidates {
 				if candidate.Selected {
 					workerID = candidate.Descriptor.ID
 					if reason == "" {
@@ -118,12 +122,12 @@ func (e *Engine) RunWorkflow(ctx context.Context, family TaskFamily, instance In
 			}
 		}
 		if workerID == "" {
-			workerID = candidates[0].Descriptor.ID
-			reason = "fell back to first candidate: " + candidates[0].Reason
+			workerID = registryCandidates[0].Descriptor.ID
+			reason = "fell back to first candidate: " + registryCandidates[0].Reason
 		}
 		stepTrace.SelectedWorker = workerID
 		stepTrace.SelectionReason = reason
-		for _, candidate := range candidates {
+		for _, candidate := range registryCandidates {
 			if candidate.Descriptor.ID == workerID {
 				stepTrace.EngineKind = string(candidate.Descriptor.Engine)
 				stepTrace.ProfileVersion = candidate.Descriptor.ProfileRef
