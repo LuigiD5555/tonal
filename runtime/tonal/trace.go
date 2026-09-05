@@ -1,12 +1,8 @@
 package tonal
 
-import "tlaloc.local/behaviorlab/tlaloquekit"
-
-// RunRecord is the mandatory deterministic trace of one workflow
-// execution: goal, resolved DAG, every capability requested, candidate
-// Tlaloques and rejection reasons, the selected Tlaloque, Blackboard reads
-// and writes, deterministic transforms, model calls, and the final
-// verification/answer. It is what proves TONAL actually routed the work.
+// RunRecord is the mandatory deterministic trace of one workflow execution:
+// goal, requested capabilities, candidates, selected component, Blackboard
+// reads/writes, cost signals and final verification/answer.
 type RunRecord struct {
 	WorkflowID        string `json:"workflow_id"`
 	Family            string `json:"family"`
@@ -17,31 +13,29 @@ type RunRecord struct {
 
 	Steps []StepTrace `json:"steps"`
 
-	FinalKey    string                  `json:"final_key"`
-	FinalValue  tlaloquekit.Observation `json:"final_value"`
-	FinalStatus string                  `json:"final_status"` // OK | UNKNOWN | UNSUPPORTED | CONTRACT_FAILURE | ERROR
-	Error       string                  `json:"error,omitempty"`
+	FinalKey    string      `json:"final_key"`
+	FinalValue  Observation `json:"final_value"`
+	FinalStatus string      `json:"final_status"` // OK | UNKNOWN | UNSUPPORTED | CONTRACT_FAILURE | ERROR
+	Error       string      `json:"error,omitempty"`
 
-	// TerminalOutputKind freezes the Fact semantics (protocol section 4):
-	// a family with a terminal VERIFY yields a "promoted_fact"; a family
-	// without VERIFY (Shapes 1-2) yields an "evaluable_terminal_output"
-	// that the scorer reads directly and that is NOT a Fact.
-	TerminalOutputKind string `json:"terminal_output_kind"`
-
-	Accounting Accounting `json:"accounting"`
+	TerminalOutputKind string     `json:"terminal_output_kind"`
+	Accounting         Accounting `json:"accounting"`
 }
 
-// StepTrace records one node's resolution and execution.
+// StepTrace records one node's resolution and execution without assuming the
+// selected component is a Tlaloque. Kind distinguishes machinery from
+// external cognition.
 type StepTrace struct {
 	LocalID    string `json:"local_id"`
 	Role       string `json:"role,omitempty"`
 	Capability string `json:"capability"`
 	NodeID     string `json:"node_id"`
 
-	Candidates      []tlaloquekit.Candidate `json:"candidates"`
-	SelectedWorker  string                  `json:"selected_worker"`
-	SelectionReason string                  `json:"selection_reason"`
-	EngineKind      string                  `json:"engine_kind"`
+	Candidates      []CapabilityCandidate `json:"candidates"`
+	SelectedWorker  string                `json:"selected_worker"`
+	SelectedKind    CapabilityKind        `json:"selected_kind,omitempty"`
+	SelectionReason string                `json:"selection_reason"`
+	EngineKind      string                `json:"engine_kind"`
 
 	BlackboardReads  []string `json:"blackboard_reads"`
 	BlackboardWrites []string `json:"blackboard_writes"`
