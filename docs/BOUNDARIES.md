@@ -35,6 +35,28 @@ Parrot does not own system planning, routing, verification, memory, Blackboard s
 
 Tlaloc may characterize Parrot behavior and may turn recurring verified Parrot work into a candidate Tlaloque or Machine. It does not promote the external model itself.
 
+### Final-response sub-boundary
+
+Parrot's user-facing response role is narrower than its possible internal cognition roles.
+
+Once Tonal has resolved a task, verified results and committed final facts to the Blackboard, Parrot may render those facts into natural language. At this boundary:
+
+- Blackboard facts define what may be asserted;
+- Parrot may choose wording, ordering and tone;
+- `AUTO` tone may rely on the interaction and Parrot's pretrained conversational priors;
+- an explicit tone may be requested by the user or Tonal policy;
+- Parrot receives only an explicit read-only projection of verified facts;
+- Parrot cannot append observations or facts during response rendering;
+- rendered text must identify its grounding keys;
+- rendered text is not released until a `ResponseVerifier` accepts semantic closure against those facts.
+
+In short:
+
+```text
+semantic freedom: NO
+expressive freedom: YES
+```
+
 ## Capability boundary
 
 `Capability` is the common Tonal abstraction. It must not collapse component identity.
@@ -69,6 +91,18 @@ Tlaloc
           │
           ▼
 SelectionPolicy -> Executor -> Verifier -> Blackboard/Episode
+                                      │
+                                      ▼
+                              ResponseComposer
+                                      │
+                                      ▼
+                          Parrot expressive rendering
+                                      │
+                                      ▼
+                              ResponseVerifier
+                                      │
+                                      ▼
+                                     User
           │
           ▼
         Tlaloc
@@ -78,3 +112,5 @@ SelectionPolicy -> Executor -> Verifier -> Blackboard/Episode
 ## Core invariant
 
 Use reliable reusable machinery when sufficient. Invoke external probabilistic cognition only when unresolved uncertainty or novelty justifies it.
+
+For final responses, semantic authority stays in verified Blackboard state; Parrot contributes expression, not post-hoc facts.
