@@ -120,14 +120,14 @@ const (
 // ControlTransition is the observable flight-recorder entry for one loop
 // iteration. It is designed to be convertible into an Episode later.
 type ControlTransition struct {
-	Iteration    int                       `json:"iteration"`
-	Decision     ControlDecision           `json:"decision"`
-	Candidates   []CapabilityCandidate     `json:"candidates,omitempty"`
-	Selected     *CapabilityCandidate      `json:"selected,omitempty"`
+	Iteration    int                        `json:"iteration"`
+	Decision     ControlDecision            `json:"decision"`
+	Candidates   []CapabilityCandidate      `json:"candidates,omitempty"`
+	Selected     *CapabilityCandidate       `json:"selected,omitempty"`
 	Result       *CapabilityExecutionResult `json:"result,omitempty"`
-	Verification *TransitionVerification   `json:"verification,omitempty"`
-	Outcome      ControlTransitionOutcome  `json:"outcome"`
-	Error        string                    `json:"error,omitempty"`
+	Verification *TransitionVerification    `json:"verification,omitempty"`
+	Outcome      ControlTransitionOutcome   `json:"outcome"`
+	Error        string                     `json:"error,omitempty"`
 }
 
 type ControlRunStatus string
@@ -284,6 +284,7 @@ func (l *ControlLoop) Run(ctx context.Context, req ControlRunRequest, controller
 			TaskID:            req.RunID,
 			NodeID:            fmt.Sprintf("%s::control-%03d", req.RunID, iteration),
 			Capability:        capability,
+			SourceID:          selected.SourceID,
 			WorkerID:          selected.WorkerID,
 			Input:             decision.Input,
 			PriorObservations: blackboard.Snapshot(),
@@ -359,31 +360,8 @@ func hasExternalCandidate(candidates []CapabilityCandidate) bool {
 }
 
 func chooseControlCandidate(policy SelectionPolicy, decision ControlDecision, candidates []CapabilityCandidate) (CapabilityCandidate, string, bool) {
-	workerID, reason := policy.SelectWorker(Step{
+	return selectCapabilityCandidate(policy, Step{
 		Capability:          decision.Capability,
 		PreferDeterministic: decision.PreferDeterministic,
 	}, candidates)
-	if workerID == "" {
-		for _, candidate := range candidates {
-			if candidate.Selected {
-				workerID = candidate.WorkerID
-				if reason == "" {
-					reason = candidate.Reason
-				}
-				break
-			}
-		}
-	}
-	if workerID == "" && len(candidates) > 0 {
-		workerID = candidates[0].WorkerID
-		if reason == "" {
-			reason = "fallback to first eligible candidate"
-		}
-	}
-	for _, candidate := range candidates {
-		if candidate.WorkerID == workerID {
-			return candidate, reason, true
-		}
-	}
-	return CapabilityCandidate{}, reason, false
 }
