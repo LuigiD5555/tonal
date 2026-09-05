@@ -2,25 +2,49 @@ package tonal
 
 import "strings"
 
-// SelectionPolicy decides which already-qualified capability candidate TONAL
+// SelectionPolicy decides which already-qualified capability candidate Tonal
 // should use for one bounded Step. It does not construct executors, mutate the
-// Registry, or receive model-specific request parameters.
-//
-// A policy may return "" to accept the Registry's preselected candidate. This
-// keeps the current T1 behavior while making selection independently
-// replaceable for later R2 experiments.
+// Registry, or receive provider/model-specific request parameters.
 type SelectionPolicy interface {
 	Name() string
 	SelectWorker(step Step, candidates []CapabilityCandidate) (workerID string, reason string)
 }
 
 // RoutingPolicy is the T1-era name retained as a source-compatible alias.
-// New R2 code should prefer SelectionPolicy. Frozen T1 behavior is unchanged.
 type RoutingPolicy = SelectionPolicy
 
-// HeterogeneousPolicy is Arm C: TONAL never overrides the Registry. The
-// Registry's deterministic-first, smallest-first, CapabilityProfile-vetoed
-// ranking decides every executor.
+// MachineryFirstPolicy is the initial post-T1 R2 policy. Given an already
+// eligible candidate set it prefers deterministic machinery, then other
+// non-external machinery, and only then external cognition.
+//
+// Eligibility is a separate concern. In particular, Control Loop R0 filters
+// EXTERNAL_MODEL candidates unless the controller explicitly permits them for
+// that transition. This policy therefore cannot silently wake Parrot.
+type MachineryFirstPolicy struct{}
+
+func (MachineryFirstPolicy) Name() string { return "R2_MACHINERY_FIRST" }
+
+func (MachineryFirstPolicy) SelectWorker(_ Step, candidates []CapabilityCandidate) (string, string) {
+	for _, candidate := range candidates {
+		if candidate.Kind != CapabilityExternalModel && candidate.Deterministic {
+			return candidate.WorkerID, "machinery-first: deterministic non-external capability"
+		}
+	}
+	for _, candidate := range candidates {
+		if candidate.Kind != CapabilityExternalModel {
+			return candidate.WorkerID, "machinery-first: qualified non-external capability"
+		}
+	}
+	for _, candidate := range candidates {
+		if candidate.Kind == CapabilityExternalModel {
+			return candidate.WorkerID, "machinery-first: external cognition is the remaining eligible capability"
+		}
+	}
+	return "", "no eligible candidate"
+}
+
+// HeterogeneousPolicy is frozen T1 Arm C: Tonal never overrides the frozen
+// Tlaloc R1 Registry's ranking.
 type HeterogeneousPolicy struct{}
 
 func (HeterogeneousPolicy) Name() string { return "C_HETEROGENEOUS_TONAL" }
@@ -32,11 +56,7 @@ func (HeterogeneousPolicy) SelectWorker(Step, []CapabilityCandidate) (string, st
 // ParrotCentricPolicy is the frozen Arm B compatibility policy. For the
 // cognitive capabilities declared by T1 it forces the EXTERNAL_MODEL
 // candidate instead of reusable machinery. Infrastructure capabilities are
-// left to the Registry.
-//
-// The policy knows no provider, model name, worker id or prompt. It selects
-// only by Tonal's component Kind. This preserves T1's Parrot-centric arm while
-// keeping Parrot external to the Tlaloque machinery ontology.
+// left to the frozen Registry.
 type ParrotCentricPolicy struct {
 	CognitiveCapabilities map[string]bool
 }
