@@ -1,4 +1,4 @@
-// Package arch holds architecture-boundary tests for the TONAL runtime.
+// Package arch holds architecture-boundary tests for the Tonal runtime.
 package arch
 
 import (
@@ -10,7 +10,6 @@ import (
 	"testing"
 )
 
-// runtimeRoot is the runtime module directory (parent of this package).
 func runtimeRoot(t *testing.T) string {
 	t.Helper()
 	wd, err := os.Getwd()
@@ -20,7 +19,6 @@ func runtimeRoot(t *testing.T) string {
 	return filepath.Dir(wd)
 }
 
-// walkGo yields every non-test .go file under dir.
 func walkGo(t *testing.T, dir string, fn func(path string, src []byte)) {
 	t.Helper()
 	err := filepath.WalkDir(dir, func(path string, entry os.DirEntry, err error) error {
@@ -42,11 +40,28 @@ func walkGo(t *testing.T, dir string, fn func(path string, src []byte)) {
 	}
 }
 
-// TONAL's engine and CLI must never DIRECTLY import a Tlaloc internal
-// package. They see Tlaloc only through the public tlaloquekit contract.
-// (tlalocbridge is the one wiring seam and is allowed to import the
-// tlaloquekit builder, which is still public.)
-func TestEngineDoesNotImportTlalocInternals(t *testing.T) {
+// Tonal core owns its capability/registry/state contracts. Only an adapter
+// package such as tlalocbridge may know a Tlaloc publication contract.
+func TestTonalCoreDoesNotImportTlaloc(t *testing.T) {
+	root := filepath.Join(runtimeRoot(t), "tonal")
+	walkGo(t, root, func(path string, src []byte) {
+		fileSet := token.NewFileSet()
+		file, err := parser.ParseFile(fileSet, path, src, parser.ImportsOnly)
+		if err != nil {
+			t.Fatalf("parse %s: %v", path, err)
+		}
+		for _, imp := range file.Imports {
+			value := strings.Trim(imp.Path.Value, `"`)
+			if strings.HasPrefix(value, "tlaloc.local/") {
+				t.Errorf("%s imports Tlaloc package %q; translate it behind an adapter", path, value)
+			}
+		}
+	})
+}
+
+// Runtime packages outside explicit adapters must never reach into another
+// repository's internal implementation namespace.
+func TestRuntimeDoesNotImportTlalocInternals(t *testing.T) {
 	root := runtimeRoot(t)
 	for _, sub := range []string{"tonal", "cmd", "arch"} {
 		walkGo(t, filepath.Join(root, sub), func(path string, src []byte) {
@@ -65,10 +80,10 @@ func TestEngineDoesNotImportTlalocInternals(t *testing.T) {
 	}
 }
 
-// The public contract package tlaloquekit (the only tlaloc package the
-// engine imports) must itself be free of internal/* imports, so importing
-// it drags in no engine internals.
-func TestPublicContractPackageIsInternalFree(t *testing.T) {
+// The frozen Tlaloc R1 public contract consumed by tlalocbridge remains free
+// of internal/* imports. This protects the compatibility adapter from dragging
+// Tlaloc implementation internals into the runtime module.
+func TestFrozenTlalocPublicContractIsInternalFree(t *testing.T) {
 	root := filepath.Join(runtimeRoot(t), "..", ".work", "components", "tlaloc", "behavior-lab", "tlaloquekit")
 	if _, err := os.Stat(root); err != nil {
 		t.Skipf("pinned Tlaloc checkout not materialised: %v", err)
@@ -99,8 +114,8 @@ func TestPublicContractPackageIsInternalFree(t *testing.T) {
 	}
 }
 
-// TONAL must contain no executor-specific competence constants. A Tlaloque
-// enforces its own envelope; the runtime stays model-agnostic.
+// Tonal must contain no executor-specific competence constants. Capability
+// envelopes belong to machinery/external-cognition adapters and evidence.
 func TestEngineHasNoParrotSpecificConstants(t *testing.T) {
 	forbidden := []string{
 		"UPSCALE", "LOW_SCALE", "crop_to_line", "CROP_TO_OPERAND_LINE",
