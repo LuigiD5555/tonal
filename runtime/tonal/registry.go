@@ -57,11 +57,13 @@ type CapabilityUsage struct {
 }
 
 // CapabilityExecutionRequest asks the Registry to execute one already
-// selected component on one bounded workflow node.
+// selected component on one bounded workflow node. SourceID identifies which
+// registry source owns WorkerID when a CompositeRegistry is used.
 type CapabilityExecutionRequest struct {
 	TaskID            string          `json:"task_id"`
 	NodeID            string          `json:"node_id"`
 	Capability        string          `json:"capability"`
+	SourceID          string          `json:"source_id,omitempty"`
 	WorkerID          string          `json:"worker_id"`
 	Input             json.RawMessage `json:"input"`
 	PriorObservations []Observation   `json:"prior_observations,omitempty"`
@@ -70,11 +72,11 @@ type CapabilityExecutionRequest struct {
 // CapabilityExecutionResult is the component-neutral result returned to the
 // Tonal Engine.
 type CapabilityExecutionResult struct {
-	WorkerID     string          `json:"worker_id"`
-	Output       json.RawMessage `json:"output"`
-	Confidence   float64         `json:"confidence,omitempty"`
-	Notes        string          `json:"notes,omitempty"`
-	Observations []Observation   `json:"observations,omitempty"`
+	WorkerID     string           `json:"worker_id"`
+	Output       json.RawMessage  `json:"output"`
+	Confidence   float64          `json:"confidence,omitempty"`
+	Notes        string           `json:"notes,omitempty"`
+	Observations []Observation    `json:"observations,omitempty"`
 	Usage        *CapabilityUsage `json:"usage,omitempty"`
 }
 
