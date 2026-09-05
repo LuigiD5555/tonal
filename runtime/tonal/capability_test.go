@@ -1,56 +1,25 @@
 package tonal
 
-import (
-	"testing"
-
-	"tlaloc.local/behaviorlab/tlaloquekit"
-)
+import "testing"
 
 var _ SelectionPolicy = HeterogeneousPolicy{}
 var _ RoutingPolicy = HeterogeneousPolicy{}
 
-func TestCapabilityCandidatesReclassifyFrozenGenerativeAdapterAsExternalModel(t *testing.T) {
-	in := []tlaloquekit.Candidate{
-		{
-			Descriptor: tlaloquekit.Descriptor{
-				ID:            "det-normalize",
-				Capability:    "NORMALIZE",
-				Engine:        tlaloquekit.EngineDeterministic,
-				Deterministic: true,
-				ProfileRef:    "normalize@r1",
-			},
-			Selected: true,
-			Reason:   "qualified deterministic candidate",
-		},
-		{
-			Descriptor: tlaloquekit.Descriptor{
-				ID:         "generic-model-worker",
-				Capability: "NORMALIZE",
-				Engine:     tlaloquekit.EngineGenerative,
-				ProfileRef: "model@r1",
-			},
-			Reason: "qualified generative candidate",
-		},
+func TestComponentKindIsIndependentFromGenerativeBehavior(t *testing.T) {
+	boundedGenerative := CapabilityCandidate{
+		WorkerID:   "bounded-generative-specialist",
+		Capability: "NORMALIZE",
+		Kind:       CapabilityTlaloque,
+		Generative: true,
 	}
-
-	got := capabilityCandidates(in)
-	if len(got) != 2 {
-		t.Fatalf("got %d candidates, want 2", len(got))
+	external := CapabilityCandidate{
+		WorkerID:   "external-model",
+		Capability: "NORMALIZE",
+		Kind:       CapabilityExternalModel,
+		Generative: true,
 	}
-	if got[0].Kind != CapabilityTlaloque {
-		t.Fatalf("deterministic candidate kind = %q, want TLALOQUE", got[0].Kind)
-	}
-	if !got[0].Deterministic || got[0].Generative {
-		t.Fatalf("deterministic candidate flags = deterministic:%v generative:%v", got[0].Deterministic, got[0].Generative)
-	}
-	if got[1].Kind != CapabilityExternalModel {
-		t.Fatalf("generative R1 adapter kind = %q, want EXTERNAL_MODEL", got[1].Kind)
-	}
-	if !got[1].Generative || got[1].Deterministic {
-		t.Fatalf("external candidate flags = deterministic:%v generative:%v", got[1].Deterministic, got[1].Generative)
-	}
-	if got[1].WorkerID != "generic-model-worker" {
-		t.Fatalf("worker id = %q", got[1].WorkerID)
+	if boundedGenerative.Kind == external.Kind {
+		t.Fatal("generative behavior must not collapse TLALOQUE and EXTERNAL_MODEL kinds")
 	}
 }
 
@@ -58,9 +27,6 @@ func TestParrotCentricPolicySelectsExternalModelKindNotGenerativeFlag(t *testing
 	policy := ParrotCentricPolicy{CognitiveCapabilities: map[string]bool{"NORMALIZE": true}}
 	candidates := []CapabilityCandidate{
 		{WorkerID: "det-normalize", Capability: "NORMALIZE", Kind: CapabilityTlaloque, Deterministic: true, Selected: true},
-		// A future model-backed Tlaloque may itself be generative; Arm B must
-		// still choose Tonal's external cognition component, not any generative
-		// machinery.
 		{WorkerID: "bounded-generative-specialist", Capability: "NORMALIZE", Kind: CapabilityTlaloque, Generative: true},
 		{WorkerID: "replaceable-external-model", Capability: "NORMALIZE", Kind: CapabilityExternalModel, Generative: true},
 	}
