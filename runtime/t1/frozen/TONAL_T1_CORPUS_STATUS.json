@@ -1,0 +1,29 @@
+{
+  "schema": "tonal.t1.corpus-status.r1",
+  "experiment_id": "tonal-t1-heterogeneous-composition",
+  "decided_at": "2026-09-04",
+  "CORPUS_REUSE": true,
+  "INSTANCE_LEVEL_HELD_OUT": true,
+  "CROSS_DOCUMENT_HELD_OUT": false,
+  "SOURCE_POOL_R1_EXHAUSTED": true,
+  "T1_USES_NEW_DETERMINISTIC_SELECTOR": true,
+  "generalization_claim": "instance-level held-out only; NO cross-document generalization is claimed for TONAL T1",
+  "selection_universe": "fresh deterministic scan of the full 1152-page canonical D2L store (fold-bench-reconstructed-r0), NOT limited to the frozen R1 selection universe SOURCE_POOL_R1",
+  "store": {
+    "store_dir": "experiments/exocortex-decomposition-r0/stores/fold-bench-reconstructed-r0",
+    "store_root_sha256": "c880eedb03d5ed4996d3edf8fa5df81a4cb0ef84c7d5ae99ae03377ceaef9c4f",
+    "source_pdf_sha256": "7143a3d446074a33c7b3e945de0881ad759265536a55fec7025cd20ed6c0a8e9",
+    "page_count": 1152,
+    "region_count": 168595
+  },
+  "exclusion_principle": "every T1 operand must be NOT previously selected or inferred under ANY available physical identity key (prior candidate_id, (page,region_id), (page,source_bbox), (page,char-offset span), normalized source-span hash) across P0/P1/P2/T0-A/T0-B and R1-A0/A1/B/C/D/E/F/G and CapabilityProfile-H",
+  "provisional_pre_freeze_estimate": {
+    "note": "python approximation; the frozen Go selector produces the authoritative numbers",
+    "t1_eligible_total": 453,
+    "excluded_as_prior_used": 142,
+    "available_unique_operands": 311,
+    "distinct_pages_available": 228,
+    "pages_with_ge2_available": 59,
+    "distinct_values_available": 122
+  }
+}
