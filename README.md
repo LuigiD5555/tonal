@@ -1,4 +1,6 @@
-# Tonal — Architecture R2 foundation
+# Tonal 0.1.0-alpha.5
+
+**Architecture R2 foundation**
 
 Tonal is an experimental **heterogeneous cognitive/runtime system** for composing bounded, measurable capabilities into verified workflows.
 
