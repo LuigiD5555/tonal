@@ -23,7 +23,7 @@
       "kind": "development_tool",
       "version": "6.0.0-alpha.21",
       "repository": "https://github.com/LuigiD5555/tlaloc.git",
-      "commit": "dd5b167bfcea61b638bf042624d5dbbc25bc0d1f",
+      "commit": "065782892ef4c2cf6c2fdadf847c118582542842",
       "authority": "behavioral development, bounded Tlaloque swarm experiments, prompt-first distillation, failure-to-regression conversion and target-specific development laboratories",
       "role": "optional development kit",
       "verification": [
@@ -62,7 +62,7 @@
       "A Tonal verification proves the declared composition is reproducible and its configured checks pass. It does not promote Origami semantics, visual profiles or model capabilities.",
       "A Tonal composition references exact commits, never floating branches.",
       "The current composition includes the failure-driven Native semantic regression tooling in Tlaloc alpha.15 and the matching semantic-first T2 correction in Origami alpha.12; this composition does not claim held-out VLM success.",
-      "The experimental-spine branch repins Tlaloc alpha.21 to exact commit dd5b167bfcea61b638bf042624d5dbbc25bc0d1f so TONAL runtime prototypes can consume the complete public tlaloc.local/behaviorlab/prototypelab projection API. This is an experimental composition pin, not a new Tlaloc release or a promotion claim.",
+      "The experimental-spine branch repins Tlaloc alpha.21 to exact commit 065782892ef4c2cf6c2fdadf847c118582542842 so TONAL runtime prototypes can consume the public tlaloc.local/behaviorlab/prototypelab projection API with source-neutral model-call accounting. This is an experimental composition pin, not a new Tlaloc release or a promotion claim.",
       "TONAL T1 introduced a runtime subsystem under runtime/ (module tonal.local/runtime) that consumes qualified Tlaloques via tlaloc.local/behaviorlab/tlaloquekit. On this experimental branch, runtime/experience additionally adapts native TONAL RunRecords into Prototype Lab Episodes while keeping RunRecord as execution authority and requiring explicit experiment evaluation instead of treating execution completion as semantic correctness."
     ]
   },
