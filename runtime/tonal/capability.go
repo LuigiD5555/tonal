@@ -13,9 +13,11 @@ const (
 )
 
 // CapabilityCandidate is Tonal's runtime view of one eligible executor
-// candidate for a bounded capability. Selection policies depend only on this
-// Tonal-owned type, never on the publication contract of a specific source.
+// candidate for a bounded capability. SourceID identifies the registry source
+// that owns execution dispatch; WorkerID only needs to be unique within that
+// source.
 type CapabilityCandidate struct {
+	SourceID      string         `json:"source_id,omitempty"`
 	WorkerID      string         `json:"worker_id"`
 	Capability    string         `json:"capability"`
 	Kind          CapabilityKind `json:"kind"`
