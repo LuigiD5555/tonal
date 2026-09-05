@@ -96,8 +96,8 @@ Every iteration records:
 iteration
 controller decision
 external-cognition permission
-eligible candidates
-selected component kind/id
+eligible candidates with SourceID + WorkerID
+selected component source/kind/id
 execution output/usage
 verification verdict
 commit/reject status
@@ -105,6 +105,42 @@ error or reason
 ```
 
 This is the raw material for Episodes and later Tlaloc analysis.
+
+## Final response is a separate boundary
+
+A successful control run determines semantic state; it does not grant Parrot permission to improvise a new answer after the loop.
+
+User-facing rendering is a separate presentation phase:
+
+```text
+Control Loop
+   ↓
+verified Blackboard FACTs
+   ↓
+ResponsePlan selects grounding keys
+   ↓
+ResponseComposer
+   ↓
+Parrot / EXTERNAL_MODEL
+   ├── may choose wording
+   ├── may choose ordering
+   └── may choose tone when tone_mode=AUTO
+   ↓
+ResponseVerifier
+   ↓
+release text
+```
+
+The renderer receives only the explicitly selected verified facts, not the entire Blackboard. It has no Blackboard write path and cannot emit semantic observations during rendering.
+
+The governing rule is:
+
+```text
+Blackboard: WHAT may be asserted
+Parrot:     HOW it is expressed
+```
+
+A cited grounding key is necessary but not sufficient proof that generated text is semantically supported. Therefore `ResponseComposer` fails closed when no `ResponseVerifier` is configured, and rejected text is not released.
 
 ## First self-hosting target
 
@@ -175,4 +211,6 @@ R0 is successful when tests demonstrate all of the following:
 3. Parrot is never invoked without explicit per-transition permission;
 4. a rejected transition cannot mutate committed state;
 5. unavailable machinery can be recorded and followed by explicit external escalation;
-6. every transition leaves enough structured evidence to form an Episode later.
+6. every transition leaves enough structured evidence to form an Episode later;
+7. final response rendering cannot create or commit new semantic state;
+8. source-aware selection remains correct even when different providers reuse the same `WorkerID`.
