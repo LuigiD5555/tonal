@@ -7,7 +7,7 @@
       "kind": "development_tool",
       "version": "6.0.0-alpha.21",
       "repository": "https://github.com/LuigiD5555/tlaloc.git",
-      "commit": "dd5b167bfcea61b638bf042624d5dbbc25bc0d1f"
+      "commit": "065782892ef4c2cf6c2fdadf847c118582542842"
     },
     "origami": {
       "kind": "target",
