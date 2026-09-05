@@ -5,67 +5,47 @@ import (
 	"encoding/json"
 	"strings"
 	"testing"
-
-	"tlaloc.local/behaviorlab/tlaloquekit"
 )
 
-// fakeRegistry is a deterministic in-memory QualifiedRegistry. It lets the
-// TONAL runtime be exercised with no Tlaloc dependency and no model.
+// fakeRegistry proves the Engine can run with no Tlaloc package and no model.
 type fakeRegistry struct {
-	descriptors map[string][]tlaloquekit.Descriptor // capability -> candidates (first = selected)
-	exec        func(req tlaloquekit.ExecutionRequest) (tlaloquekit.ExecutionResult, error)
+	descriptors map[string][]CapabilityDescriptor // first = selected
+	exec        func(req CapabilityExecutionRequest) (CapabilityExecutionResult, error)
 }
 
-func (f *fakeRegistry) Capabilities() []tlaloquekit.Descriptor {
-	var out []tlaloquekit.Descriptor
-	for _, list := range f.descriptors {
-		out = append(out, list...)
-	}
-	return out
-}
-
-func (f *fakeRegistry) Candidates(capability string, _ tlaloquekit.Goal) []tlaloquekit.Candidate {
+func (f *fakeRegistry) Candidates(capability string, _ CapabilityGoal) []CapabilityCandidate {
 	list := f.descriptors[strings.ToUpper(capability)]
-	out := make([]tlaloquekit.Candidate, 0, len(list))
-	for index, descriptor := range list {
-		out = append(out, tlaloquekit.Candidate{
-			Descriptor: descriptor,
-			Selected:   index == 0,
-			Reason:     "fake",
+	out := make([]CapabilityCandidate, 0, len(list))
+	for index, d := range list {
+		out = append(out, CapabilityCandidate{
+			WorkerID:      d.ID,
+			Capability:    d.Capability,
+			Kind:          d.Kind,
+			EngineKind:    d.EngineKind,
+			ProfileRef:    d.ProfileRef,
+			Deterministic: d.Deterministic,
+			Generative:    d.EngineKind == "GENERATIVE",
+			Selected:      index == 0,
+			Reason:        "fake",
 		})
 	}
 	return out
 }
 
-func (f *fakeRegistry) Resolve(goal tlaloquekit.Goal, planID string, _ int) (tlaloquekit.Resolution, error) {
-	list := f.descriptors[strings.ToUpper(goal.Capability)]
-	if len(list) == 0 {
-		return tlaloquekit.Resolution{}, nil
-	}
-	return tlaloquekit.Resolution{
-		Goal: goal, PlanID: planID,
-		Nodes:    []tlaloquekit.PlanNode{{ID: planID + "-n0", Capability: goal.Capability, WorkerID: list[0].ID}},
-		Selected: []tlaloquekit.Descriptor{list[0]},
-	}, nil
-}
-
-func (f *fakeRegistry) Execute(_ context.Context, req tlaloquekit.ExecutionRequest) (tlaloquekit.ExecutionResult, error) {
+func (f *fakeRegistry) Execute(_ context.Context, req CapabilityExecutionRequest) (CapabilityExecutionResult, error) {
 	return f.exec(req)
 }
 
-func (f *fakeRegistry) ParrotProfileID() string   { return "" }
-func (f *fakeRegistry) ParrotProfileHash() string { return "" }
-
-func observationOf(req tlaloquekit.ExecutionRequest, engine tlaloquekit.EngineKind, value any) tlaloquekit.ExecutionResult {
+func observationOf(req CapabilityExecutionRequest, engine string, value any) CapabilityExecutionResult {
 	raw, _ := json.Marshal(value)
 	kind := "OBSERVATION"
 	if req.Capability == "VERIFY" {
 		kind = "FACT"
 	}
-	return tlaloquekit.ExecutionResult{
+	return CapabilityExecutionResult{
 		WorkerID: req.WorkerID,
 		Output:   raw,
-		Observations: []tlaloquekit.Observation{{
+		Observations: []Observation{{
 			Producer: req.WorkerID, Capability: req.Capability, Key: req.NodeID,
 			Value: raw, Kind: kind, Confidence: 1,
 		}},
@@ -73,9 +53,9 @@ func observationOf(req tlaloquekit.ExecutionRequest, engine tlaloquekit.EngineKi
 	}
 }
 
-func usageFor(engine tlaloquekit.EngineKind) *tlaloquekit.Usage {
-	if engine == tlaloquekit.EngineGenerative {
-		return &tlaloquekit.Usage{ModelCalls: 1, PromptTokens: 10, CompletionTokens: 2}
+func usageFor(engine string) *CapabilityUsage {
+	if engine == "GENERATIVE" {
+		return &CapabilityUsage{ModelCalls: 1, PromptTokens: 10, CompletionTokens: 2}
 	}
 	return nil
 }
@@ -109,24 +89,24 @@ func TestCriticalPathDepthIsMechanical(t *testing.T) {
 
 func TestRunWorkflow_HeterogeneousArm_ChainsObservationsAndTraces(t *testing.T) {
 	registry := &fakeRegistry{
-		descriptors: map[string][]tlaloquekit.Descriptor{
-			"LOCATE_REGION":   {{ID: "region-locate-tlaloque", Capability: "LOCATE_REGION", Engine: tlaloquekit.EngineDeterministic, Deterministic: true}},
-			"EXTRACT_NUMBER":  {{ID: "parrot-tlaloque:lfm2:EXTRACT_NUMBER", Capability: "EXTRACT_NUMBER", Engine: tlaloquekit.EngineGenerative, ProfileRef: "parrot-lfm2-vl-1.6b@r1.0.0"}},
-			"NORMALIZE":       {{ID: "normalize-tlaloque", Capability: "NORMALIZE", Engine: tlaloquekit.EngineDeterministic, Deterministic: true}},
-			"COMPARE_NUMBERS": {{ID: "numeric-tlaloque", Capability: "COMPARE_NUMBERS", Engine: tlaloquekit.EngineDeterministic, Deterministic: true}},
+		descriptors: map[string][]CapabilityDescriptor{
+			"LOCATE_REGION":   {{ID: "region-locate-tlaloque", Capability: "LOCATE_REGION", Kind: CapabilityTlaloque, EngineKind: "DETERMINISTIC", Deterministic: true}},
+			"EXTRACT_NUMBER":  {{ID: "external-model:EXTRACT_NUMBER", Capability: "EXTRACT_NUMBER", Kind: CapabilityExternalModel, EngineKind: "GENERATIVE", ProfileRef: "parrot-lfm2-vl-1.6b@r1.0.0"}},
+			"NORMALIZE":       {{ID: "normalize-tlaloque", Capability: "NORMALIZE", Kind: CapabilityTlaloque, EngineKind: "DETERMINISTIC", Deterministic: true}},
+			"COMPARE_NUMBERS": {{ID: "numeric-tlaloque", Capability: "COMPARE_NUMBERS", Kind: CapabilityTlaloque, EngineKind: "DETERMINISTIC", Deterministic: true}},
 		},
-		exec: func(req tlaloquekit.ExecutionRequest) (tlaloquekit.ExecutionResult, error) {
+		exec: func(req CapabilityExecutionRequest) (CapabilityExecutionResult, error) {
 			switch req.Capability {
 			case "LOCATE_REGION":
-				return observationOf(req, tlaloquekit.EngineDeterministic, map[string]any{"selected_address": "ohf://doc/pages/000100", "page": 100}), nil
+				return observationOf(req, "DETERMINISTIC", map[string]any{"selected_address": "ohf://doc/pages/000100", "page": 100}), nil
 			case "EXTRACT_NUMBER":
-				return observationOf(req, tlaloquekit.EngineGenerative, map[string]any{"text": "512"}), nil
+				return observationOf(req, "GENERATIVE", map[string]any{"text": "512"}), nil
 			case "NORMALIZE":
-				return observationOf(req, tlaloquekit.EngineDeterministic, map[string]any{"trimmed": "512", "is_number": true}), nil
+				return observationOf(req, "DETERMINISTIC", map[string]any{"trimmed": "512", "is_number": true}), nil
 			case "COMPARE_NUMBERS":
-				return observationOf(req, tlaloquekit.EngineDeterministic, map[string]any{"comparison": "GREATER"}), nil
+				return observationOf(req, "DETERMINISTIC", map[string]any{"comparison": "GREATER"}), nil
 			}
-			return tlaloquekit.ExecutionResult{}, nil
+			return CapabilityExecutionResult{}, nil
 		},
 	}
 
@@ -149,8 +129,10 @@ func TestRunWorkflow_HeterogeneousArm_ChainsObservationsAndTraces(t *testing.T) 
 	if len(record.Steps) != 4 {
 		t.Fatalf("expected 4 step traces, got %d", len(record.Steps))
 	}
+	if got := record.Steps[1].SelectedKind; got != CapabilityExternalModel {
+		t.Fatalf("extract selected kind = %q, want EXTERNAL_MODEL", got)
+	}
 
-	// observation chaining: normalize must have read the extract output
 	normalize := record.Steps[2]
 	if normalize.InputJSON == "" || !strings.Contains(normalize.InputJSON, `"512"`) {
 		t.Fatalf("normalize did not receive the extracted value: %s", normalize.InputJSON)
@@ -159,9 +141,8 @@ func TestRunWorkflow_HeterogeneousArm_ChainsObservationsAndTraces(t *testing.T) 
 		t.Fatalf("normalize step recorded no blackboard reads")
 	}
 
-	// accounting: exactly one generative (Parrot) call across the workflow
 	if record.Accounting.ParrotCalls != 1 || record.Accounting.GenerativeCalls != 1 {
-		t.Fatalf("accounting parrot=%d generative=%d, want 1/1", record.Accounting.ParrotCalls, record.Accounting.GenerativeCalls)
+		t.Fatalf("accounting external/parrot=%d generative=%d, want 1/1", record.Accounting.ParrotCalls, record.Accounting.GenerativeCalls)
 	}
 	if record.Accounting.DeterministicOps != 3 {
 		t.Fatalf("expected 3 deterministic ops, got %d", record.Accounting.DeterministicOps)
@@ -171,19 +152,20 @@ func TestRunWorkflow_HeterogeneousArm_ChainsObservationsAndTraces(t *testing.T) 
 	}
 }
 
-func TestRunWorkflow_ParrotCentricArm_ForcesGenerativeForCognitiveCaps(t *testing.T) {
+func TestRunWorkflow_ParrotCentricArm_ForcesExternalModelForCognitiveCaps(t *testing.T) {
 	registry := &fakeRegistry{
-		descriptors: map[string][]tlaloquekit.Descriptor{
-			"LOCATE_REGION": {{ID: "region-locate-tlaloque", Capability: "LOCATE_REGION", Engine: tlaloquekit.EngineDeterministic, Deterministic: true}},
+		descriptors: map[string][]CapabilityDescriptor{
+			"LOCATE_REGION": {{ID: "region-locate-tlaloque", Capability: "LOCATE_REGION", Kind: CapabilityTlaloque, EngineKind: "DETERMINISTIC", Deterministic: true}},
 			"NORMALIZE": {
-				{ID: "normalize-tlaloque", Capability: "NORMALIZE", Engine: tlaloquekit.EngineDeterministic, Deterministic: true},
-				{ID: "parrot-tlaloque:lfm2:NORMALIZE", Capability: "NORMALIZE", Engine: tlaloquekit.EngineGenerative},
+				{ID: "normalize-tlaloque", Capability: "NORMALIZE", Kind: CapabilityTlaloque, EngineKind: "DETERMINISTIC", Deterministic: true},
+				{ID: "bounded-generative-tlaloque", Capability: "NORMALIZE", Kind: CapabilityTlaloque, EngineKind: "GENERATIVE"},
+				{ID: "external-model:NORMALIZE", Capability: "NORMALIZE", Kind: CapabilityExternalModel, EngineKind: "GENERATIVE"},
 			},
 		},
-		exec: func(req tlaloquekit.ExecutionRequest) (tlaloquekit.ExecutionResult, error) {
-			engine := tlaloquekit.EngineDeterministic
-			if strings.HasPrefix(req.WorkerID, "parrot") {
-				engine = tlaloquekit.EngineGenerative
+		exec: func(req CapabilityExecutionRequest) (CapabilityExecutionResult, error) {
+			engine := "DETERMINISTIC"
+			if strings.HasPrefix(req.WorkerID, "external-model") {
+				engine = "GENERATIVE"
 			}
 			return observationOf(req, engine, map[string]any{"trimmed": "7"}), nil
 		},
@@ -199,26 +181,26 @@ func TestRunWorkflow_ParrotCentricArm_ForcesGenerativeForCognitiveCaps(t *testin
 		t.Fatalf("RunWorkflow: %v", err)
 	}
 	if got := record.Steps[0].SelectedWorker; got != "region-locate-tlaloque" {
-		t.Fatalf("locate should stay deterministic, got %q", got)
+		t.Fatalf("locate should stay machinery, got %q", got)
 	}
-	if got := record.Steps[1].SelectedWorker; got != "parrot-tlaloque:lfm2:NORMALIZE" {
-		t.Fatalf("arm B must force NORMALIZE to the generative executor, got %q", got)
+	if got := record.Steps[1].SelectedWorker; got != "external-model:NORMALIZE" {
+		t.Fatalf("arm B must force NORMALIZE to EXTERNAL_MODEL, got %q", got)
 	}
 	if record.Accounting.ParrotCalls != 1 {
-		t.Fatalf("arm B parrot calls = %d, want 1", record.Accounting.ParrotCalls)
+		t.Fatalf("arm B external/parrot calls = %d, want 1", record.Accounting.ParrotCalls)
 	}
 }
 
 func TestRunWorkflow_NonVerifyNodeEmittingFactIsAScopeViolation(t *testing.T) {
 	registry := &fakeRegistry{
-		descriptors: map[string][]tlaloquekit.Descriptor{
-			"NORMALIZE": {{ID: "normalize-tlaloque", Capability: "NORMALIZE", Engine: tlaloquekit.EngineDeterministic, Deterministic: true}},
+		descriptors: map[string][]CapabilityDescriptor{
+			"NORMALIZE": {{ID: "normalize-tlaloque", Capability: "NORMALIZE", Kind: CapabilityTlaloque, EngineKind: "DETERMINISTIC", Deterministic: true}},
 		},
-		exec: func(req tlaloquekit.ExecutionRequest) (tlaloquekit.ExecutionResult, error) {
+		exec: func(req CapabilityExecutionRequest) (CapabilityExecutionResult, error) {
 			raw, _ := json.Marshal(map[string]any{"trimmed": "7"})
-			return tlaloquekit.ExecutionResult{
+			return CapabilityExecutionResult{
 				WorkerID: req.WorkerID, Output: raw,
-				Observations: []tlaloquekit.Observation{{
+				Observations: []Observation{{
 					Producer: req.WorkerID, Capability: req.Capability, Key: req.NodeID,
 					Value: raw, Kind: "FACT", Confidence: 1,
 				}},
@@ -238,30 +220,21 @@ func TestRunWorkflow_NonVerifyNodeEmittingFactIsAScopeViolation(t *testing.T) {
 }
 
 func TestRunWorkflow_TerminalOutputKindFollowsVerifyPresence(t *testing.T) {
-	if got := (&Engine{}); got == nil {
-		t.Fatal("unreachable")
-	}
-	withVerify := TaskFamily{ID: "V", Goal: "g", Steps: []Step{
-		{LocalID: "s", Capability: "VERIFY", Input: InputSpec{Template: map[string]any{}}},
-	}}
+	withVerify := TaskFamily{ID: "V", Goal: "g", Steps: []Step{{LocalID: "s", Capability: "VERIFY", Input: InputSpec{Template: map[string]any{}}}}
 	if !withVerify.HasVerify() {
 		t.Fatal("HasVerify should be true")
 	}
-	noVerify := TaskFamily{ID: "N", Goal: "g", Steps: []Step{
-		{LocalID: "s", Capability: "COMPARE_NUMBERS", Input: InputSpec{Template: map[string]any{}}},
-	}}
+	noVerify := TaskFamily{ID: "N", Goal: "g", Steps: []Step{{LocalID: "s", Capability: "COMPARE_NUMBERS", Input: InputSpec{Template: map[string]any{}}}}
 	if noVerify.HasVerify() {
 		t.Fatal("HasVerify should be false")
 	}
 }
 
 func TestRunWorkflow_UnavailableCapabilityIsAContractFailureNotAPanic(t *testing.T) {
-	registry := &fakeRegistry{descriptors: map[string][]tlaloquekit.Descriptor{}, exec: func(tlaloquekit.ExecutionRequest) (tlaloquekit.ExecutionResult, error) {
-		return tlaloquekit.ExecutionResult{}, nil
+	registry := &fakeRegistry{descriptors: map[string][]CapabilityDescriptor{}, exec: func(CapabilityExecutionRequest) (CapabilityExecutionResult, error) {
+		return CapabilityExecutionResult{}, nil
 	}}
-	family := TaskFamily{ID: "F", Goal: "g", Steps: []Step{
-		{LocalID: "s", Capability: "SUMMARIZE", Input: InputSpec{Template: map[string]any{}}},
-	}}
+	family := TaskFamily{ID: "F", Goal: "g", Steps: []Step{{LocalID: "s", Capability: "SUMMARIZE", Input: InputSpec{Template: map[string]any{}}}}}
 	record, _, err := (&Engine{Registry: registry}).RunWorkflow(context.Background(), family, Instance{ID: "wf"}, HeterogeneousPolicy{})
 	if err != nil {
 		t.Fatalf("RunWorkflow returned a hard error: %v", err)
