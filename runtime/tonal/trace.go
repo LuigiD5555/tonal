@@ -24,7 +24,8 @@ type RunRecord struct {
 
 // StepTrace records one node's resolution and execution without assuming the
 // selected component is a Tlaloque. Kind distinguishes machinery from
-// external cognition.
+// external cognition; Source identifies the registry/provider boundary that
+// owns the selected WorkerID.
 type StepTrace struct {
 	LocalID    string `json:"local_id"`
 	Role       string `json:"role,omitempty"`
@@ -32,6 +33,7 @@ type StepTrace struct {
 	NodeID     string `json:"node_id"`
 
 	Candidates      []CapabilityCandidate `json:"candidates"`
+	SelectedSource  string                `json:"selected_source,omitempty"`
 	SelectedWorker  string                `json:"selected_worker"`
 	SelectedKind    CapabilityKind        `json:"selected_kind,omitempty"`
 	SelectionReason string                `json:"selection_reason"`
