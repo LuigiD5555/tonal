@@ -1,6 +1,6 @@
-// Package integration proves the TONAL runtime and the Tlaloc-published
-// R1-aware Parrot Tlaloque compose correctly across the public contract,
-// with a fake OpenAI-compatible endpoint (no real model).
+// Package integration proves the Tonal runtime can use the frozen Tlaloc R1
+// Parrot adapter while exposing it through Architecture R2 as external
+// probabilistic cognition, with a fake OpenAI-compatible endpoint.
 package integration
 
 import (
@@ -19,7 +19,6 @@ import (
 	"tonal.local/runtime/tonal"
 )
 
-// pinnedTlaloc is the fetched, tonal.lock-pinned Tlaloc checkout.
 func pinnedTlaloc(t *testing.T) string {
 	t.Helper()
 	root, err := filepath.Abs(filepath.Join("..", "..", ".work", "components", "tlaloc", "behavior-lab"))
@@ -54,7 +53,7 @@ func newFakeEndpoint(reply string) *fakeEndpoint {
 func (f *fakeEndpoint) close()       { f.server.Close() }
 func (f *fakeEndpoint) count() int64 { return atomic.LoadInt64(&f.calls) }
 
-func parrotRegistry(t *testing.T, endpointURL string) tlaloquekit.QualifiedRegistry {
+func parrotRegistry(t *testing.T, endpointURL string) *tlalocbridge.Registry {
 	t.Helper()
 	registry, err := tlalocbridge.Build(tlalocbridge.Config{
 		Parrot: &tlalocbridge.ParrotConfig{
@@ -85,7 +84,7 @@ func extractFamily(regionTemplate map[string]any) tonal.TaskFamily {
 	}
 }
 
-func run(t *testing.T, registry tlaloquekit.QualifiedRegistry, family tonal.TaskFamily, params map[string]string) (tonal.RunRecord, tonal.StepTrace) {
+func run(t *testing.T, registry tonal.CapabilityRegistry, family tonal.TaskFamily, params map[string]string) (tonal.RunRecord, tonal.StepTrace) {
 	t.Helper()
 	record, _, err := (&tonal.Engine{Registry: registry}).RunWorkflow(context.Background(), family,
 		tonal.Instance{ID: "wf-int", Family: family.ID, DeclaredDepth: 1, Params: params}, tonal.HeterogeneousPolicy{})
@@ -104,9 +103,7 @@ func decodeParrotOutput(t *testing.T, step tonal.StepTrace) map[string]any {
 	return out
 }
 
-// Item 3/4/7: adaptation and rejection happen inside the Tlaloque, behind
-// the kit. A missing visual operand yields zero model calls.
-func TestParrot_MissingOperand_ZeroModelCalls_Behind_The_Kit(t *testing.T) {
+func TestParrot_MissingOperand_ZeroModelCalls_Behind_The_Adapter(t *testing.T) {
 	fake := newFakeEndpoint("999")
 	defer fake.close()
 	registry := parrotRegistry(t, fake.server.URL+"/v1")
@@ -120,23 +117,23 @@ func TestParrot_MissingOperand_ZeroModelCalls_Behind_The_Kit(t *testing.T) {
 	if record.FinalStatus != "UNSUPPORTED" {
 		t.Fatalf("final status = %q, want UNSUPPORTED", record.FinalStatus)
 	}
+	if step.SelectedKind != tonal.CapabilityExternalModel {
+		t.Fatalf("EXTRACT_NUMBER kind=%q, want EXTERNAL_MODEL", step.SelectedKind)
+	}
 	if step.EngineKind != string(tlaloquekit.EngineGenerative) {
-		t.Fatalf("EXTRACT_NUMBER should route to the generative Tlaloque, got %q", step.EngineKind)
+		t.Fatalf("frozen R1 adapter should still report GENERATIVE engine, got %q", step.EngineKind)
 	}
 	if step.ModelCalls != 0 || record.Accounting.ParrotCalls != 0 {
-		t.Fatalf("accounting must show zero Parrot calls, got step=%d acct=%d", step.ModelCalls, record.Accounting.ParrotCalls)
+		t.Fatalf("accounting must show zero external/Parrot calls, got step=%d acct=%d", step.ModelCalls, record.Accounting.ParrotCalls)
 	}
 }
 
-// Item 6: a low-scale operand triggers the profile-derived upscale, and
-// exactly one model call is made.
 func TestParrot_LowScaleOperand_UpscalesThenOneCall(t *testing.T) {
 	fake := newFakeEndpoint("512")
 	defer fake.close()
 	registry := parrotRegistry(t, fake.server.URL+"/v1")
 
 	page := filepath.Join(pinnedTlaloc(t), "internal", "parrotpresent", "testdata", "page.png")
-	// 8 px tall line on the 300 px page -> below the 16 px safe scale
 	family := extractFamily(map[string]any{
 		"page":        1,
 		"bbox":        map[string]any{"x1": 20.0, "y1": 100.0, "x2": 180.0, "y2": 108.0},
@@ -151,6 +148,9 @@ func TestParrot_LowScaleOperand_UpscalesThenOneCall(t *testing.T) {
 	if record.FinalStatus != "OK" || record.Accounting.ParrotCalls != 1 {
 		t.Fatalf("status=%q parrotCalls=%d", record.FinalStatus, record.Accounting.ParrotCalls)
 	}
+	if step.SelectedKind != tonal.CapabilityExternalModel {
+		t.Fatalf("selected kind=%q, want EXTERNAL_MODEL", step.SelectedKind)
+	}
 	out := decodeParrotOutput(t, step)
 	decision, _ := out["adapter_decision"].(map[string]any)
 	transforms, _ := decision["transformations"].([]any)
@@ -158,18 +158,16 @@ func TestParrot_LowScaleOperand_UpscalesThenOneCall(t *testing.T) {
 		t.Fatalf("low-scale operand did not trigger UPSCALE_TO_PREFERRED: %v", transforms)
 	}
 	if step.ProfileVersion == "" {
-		t.Fatalf("step trace missing the profile version for the generative call")
+		t.Fatalf("step trace missing the profile version for the external-model call")
 	}
 }
 
-// Item 5: an already-adequate operand is not upscaled.
 func TestParrot_AdequateScaleOperand_NoUnnecessaryUpscale(t *testing.T) {
 	fake := newFakeEndpoint("77")
 	defer fake.close()
 	registry := parrotRegistry(t, fake.server.URL+"/v1")
 
 	page := filepath.Join(pinnedTlaloc(t), "internal", "parrotpresent", "testdata", "page.png")
-	// 40 px tall line on the 300 px page -> above the 16 px safe scale
 	family := extractFamily(map[string]any{
 		"page":        1,
 		"bbox":        map[string]any{"x1": 20.0, "y1": 100.0, "x2": 180.0, "y2": 140.0},
@@ -189,8 +187,6 @@ func TestParrot_AdequateScaleOperand_NoUnnecessaryUpscale(t *testing.T) {
 	}
 }
 
-// Item 8: the frozen CapabilityProfile R1 hash is hard-validated at wiring
-// time.
 func TestParrot_ProfileHashIsHardValidated(t *testing.T) {
 	_, err := tlalocbridge.Build(tlalocbridge.Config{
 		Parrot: &tlalocbridge.ParrotConfig{
