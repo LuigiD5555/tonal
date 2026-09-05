@@ -10,7 +10,17 @@ tests/test-evidence-gates.sh
 tests/test-skills.sh
 tests/test-gatekeeper.sh
 tests/test-fixed-carrier-r2.sh
+
+# Materialize the exact component revisions before testing the Tonal runtime.
+# runtime/go.mod resolves tlaloc.local/behaviorlab through the pinned checkout
+# at .work/components/tlaloc/behavior-lab.
 scripts/fetch-components.sh
+(
+  cd runtime
+  go test ./...
+  go vet ./...
+)
+
 scripts/verify-components.sh
 scripts/verify-lock.sh "$ROOT/.work/components"
 scripts/verify-fixed-carrier-r2.sh
@@ -42,4 +52,4 @@ for name, component in manifest['components'].items():
 print('DECLARED COMPONENT VERIFICATION: PASS')
 PY
 
-echo 'TONAL COMPOSITION VERIFY: PASS'
+echo 'TONAL STACK + RUNTIME VERIFY: PASS'

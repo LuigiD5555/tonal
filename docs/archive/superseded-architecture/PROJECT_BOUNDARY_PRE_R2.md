@@ -103,3 +103,7 @@ UNPINNED_TOOL != COMPOSITION_COMPONENT
 SNAPSHOT_REFERENCES_EXACT_COMMITS
 DECLARED_COMPONENT_VERIFICATION_MUST_PASS
 ```
+
+---
+
+> Archived under Architecture R2. This exact pre-R2 definition is preserved for provenance and is not current authority.

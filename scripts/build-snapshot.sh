@@ -22,9 +22,21 @@ for name in sorted(lock['components']):
     if gitdir.exists():
         shutil.rmtree(gitdir)
 PY
-cp VERSION TONAL.json tonal.lock PROJECT_BOUNDARY.md compatibility.json .work/snapshot/
+
+# Architecture R2 keeps the historical composition artifacts, but the source
+# snapshot must now include the Tonal runtime and the current authority docs.
+cp VERSION TONAL.json tonal.lock compatibility.json CLAUDE.md README.md .work/snapshot/
+mkdir -p .work/snapshot/docs
+cp \
+  docs/CURRENT_STATE.md \
+  docs/ARCHITECTURE.md \
+  docs/BOUNDARIES.md \
+  docs/RESEARCH_PROGRAM.md \
+  .work/snapshot/docs/
+cp -a runtime .work/snapshot/runtime
 mkdir -p .work/snapshot/skills
 cp -a skills/. .work/snapshot/skills/
+
 version=$(cat VERSION)
 archive="dist/tonal-${version}-source.tar.gz"
 TZ=UTC tar --sort=name --mtime='UTC 1970-01-01' --owner=0 --group=0 --numeric-owner -C .work/snapshot -cf - . | gzip -n > "$archive"

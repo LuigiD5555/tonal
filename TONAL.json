@@ -2,12 +2,12 @@
   "schema": "tonal.composition.v2",
   "tonal": {
     "version": "0.1.0-alpha.5",
-    "status": "EXPERIMENTAL_COMPOSITION_CONTRACT",
-    "role": "optional reproducible composition, integration, provenance and distribution of independently versioned development tools and targets"
+    "status": "EXPERIMENTAL_RUNTIME_AND_COMPOSITION",
+    "role": "heterogeneous cognitive/runtime and research system with exact-commit composition, integration, provenance and distribution infrastructure"
   },
   "project": {
     "name": "Tonal",
-    "architecture": "generic exact-commit composition of independent development tools, targets and optional support components",
+    "architecture": "capability-first heterogeneous runtime plus generic exact-commit composition of independent development and representation subsystems",
     "entrypoint": "tonal",
     "required_for_target_runtime": false
   },
@@ -24,8 +24,8 @@
       "version": "6.0.0-alpha.21",
       "repository": "https://github.com/LuigiD5555/tlaloc.git",
       "commit": "6ee225a66d65ea9f17f5a041d729a5ef6bb5014f",
-      "authority": "behavioral development, bounded Tlaloque swarm experiments, prompt-first distillation, failure-to-regression conversion and target-specific development laboratories",
-      "role": "optional development kit",
+      "authority": "capability development, bounded Tlaloque experiments, Behavior Lab evidence, executor qualification, CapabilityProfile production and capability lifecycle",
+      "role": "Tonal capability foundry and Behavior Lab; not Tonal runtime authority",
       "verification": [
         {"cwd":"behavior-lab","argv":["go","test","./..."]},
         {"cwd":"behavior-lab","argv":["go","vet","./..."]}
@@ -36,8 +36,8 @@
       "version": "6.0.0-alpha.12",
       "repository": "https://github.com/LuigiD5555/origami.git",
       "commit": "12176e6829e8cd0aaaa1db03f0b2cc4f4d5ea838",
-      "authority": "Origami representation semantics, semantic/native navigation, state machines, visual grammar, ROSETTA, Writer/Reader contracts and Origami releases",
-      "role": "independent target project",
+      "authority": "Origami representation, carrier, addressing, virtual-memory and profile semantics plus Origami-specific promotion evidence",
+      "role": "independently testable optional representation/carrier/memory substrate",
       "verification": [
         {"cwd":".","argv":["go","test","./..."]},
         {"cwd":".","argv":["go","vet","./..."]},
@@ -50,20 +50,27 @@
   "ownership": {
     "repo_flow": "tonal",
     "composition_contract": "tonal",
+    "runtime_authority": "tonal",
+    "capability_development_authority": "tlaloc",
     "component_semantics": "owned only by each component/target repository",
     "target_release_authority": "target repository",
-    "development_artifact_authority": "development tool until accepted by target",
-    "origami_profile_authority": "origami"
+    "development_artifact_authority": "development tool until accepted under the consuming system/target contract",
+    "origami_profile_authority": "origami",
+    "shponglese_semantic_authority": "tonal architecture / future explicit Shponglese specification, independent of physical codec"
   },
   "contracts": {
     "notes": [
       "Tlaloc and Origami remain independently usable and authoritative for their own contracts.",
-      "Tonal can compose Tlaloc, Blueprint Framework or other development systems once exact pins are supplied; unpinned examples are never treated as installed components.",
+      "Tonal runtime authority covers goal intake, workflow/DAG execution, capability selection, scheduling, Blackboard state, accounting, verification coordination and final workflow results.",
+      "Parrot is one probabilistic Tlaloque/capability and has no privileged system-level authority.",
+      "Tlaloc develops and qualifies capabilities; Tonal decides when and how to use them at runtime.",
+      "Origami may provide representation, carrier, addressing or memory services but is not required for Tonal correctness and does not own Shponglese semantics.",
+      "The historical composition layer remains exact-commit reproducibility infrastructure inside the larger Tonal system.",
       "A Tonal verification proves the declared composition is reproducible and its configured checks pass. It does not promote Origami semantics, visual profiles or model capabilities.",
       "A Tonal composition references exact commits, never floating branches.",
-      "The current composition includes the failure-driven Native semantic regression tooling in Tlaloc alpha.15 and the matching semantic-first T2 correction in Origami alpha.12; this composition does not claim held-out VLM success.",
-      "As of 2026-09-04 the Tlaloc pin is alpha.21 commit 6ee225a (TLALOC_T1_QUALIFIED_EXECUTOR_COMMIT): additive on the frozen Phase P/H baseline 445b18c. It adds tlaloquekit (the public contract, split from tlaloquekit/tlalocregistry which does the internal wiring), the deterministic ARITHMETIC Tlaloque, the R1-aware Parrot Tlaloque (loads and hash-validates CapabilityProfile R1, runs AdapterR1 before at most one model call), and internal/parrotpresent which reproduces the frozen R1/H presentation renderer byte-for-byte. Intermediate commits b22b856 and 3109399 preceded it. CapabilityProfile R1 (hash 8acc959b) is unchanged.",
-      "TONAL T1 introduces a new runtime subsystem under runtime/ (module tonal.local/runtime) that consumes qualified Tlaloques via tlaloc.local/behaviorlab/tlaloquekit. The historical composition/pinning/snapshot/evidence layer at the repository root is unchanged and remains reproducibility infrastructure; the runtime subsystem is the cognitive/computational TONAL authority. See docs/TONAL_SYSTEM_BOUNDARY_R1.md."
+      "The current composition includes the failure-driven Native semantic regression tooling in Tlaloc and the matching semantic-first correction in the pinned Origami revision; this composition does not claim held-out VLM success.",
+      "As of 2026-09-04 the Tlaloc pin is alpha.21 commit 6ee225a (TLALOC_T1_QUALIFIED_EXECUTOR_COMMIT): additive on the frozen Phase P/H baseline 445b18c. It adds tlaloquekit, deterministic capabilities and the R1-aware Parrot Tlaloque while preserving CapabilityProfile R1.",
+      "T1 remains frozen. Architecture R2 may provide compatibility interfaces around T1 but does not change T1 corpus, workflows, accounting, arms or preregistered evaluation semantics."
     ]
   },
   "invariants": [
@@ -77,11 +84,15 @@
     "UNPINNED_TOOL_NE_COMPOSITION_COMPONENT",
     "DECLARED_COMPONENT_VERIFICATION_MUST_PASS",
     "REPO_FLOW_SINGLE_AUTHORITY_IS_TONAL",
-    "REPO_FLOW_MIRRORS_MATCH_CANONICAL"
+    "REPO_FLOW_MIRRORS_MATCH_CANONICAL",
+    "PARROT_HAS_NO_PRIVILEGED_SYSTEM_ROLE",
+    "SELECTION_IS_SEPARATE_FROM_EXECUTION",
+    "VERIFICATION_AUTHORITY_IS_SEPARATE_FROM_EXECUTOR_AUTHORITY",
+    "T1_EXPERIMENT_SEMANTICS_REMAIN_FROZEN"
   ],
   "snapshot": {
     "physical_artifact": "BUILT_BY_VERIFY_WORKFLOW",
     "builder_status": "IMPLEMENTED",
-    "contents": "all locked components plus composition metadata and shared skills"
+    "contents": "locked components plus Tonal runtime, current Architecture R2 authority documents, composition metadata and shared skills"
   }
 }

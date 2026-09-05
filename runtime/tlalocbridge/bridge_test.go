@@ -5,13 +5,11 @@ import (
 	"encoding/json"
 	"testing"
 
-	"tlaloc.local/behaviorlab/tlaloquekit"
 	"tonal.local/runtime/tonal"
 )
 
-// The bridge is the seam where a real Tlaloc registry meets the engine.
-// This proves the engine runs end to end against the actual published
-// deterministic Tlaloque set (no model involved).
+// The bridge is the seam where a real Tlaloc registry meets the Tonal-owned
+// runtime contracts.
 func TestEngineRunsAgainstRealDeterministicTlaloques(t *testing.T) {
 	registry, err := Build(Config{})
 	if err != nil {
@@ -47,18 +45,16 @@ func TestEngineRunsAgainstRealDeterministicTlaloques(t *testing.T) {
 	if err := json.Unmarshal(record.FinalValue.Value, &compare); err != nil {
 		t.Fatalf("decode final value: %v", err)
 	}
-	if compare.Comparison != "GREATER" { // 150-40 = 110 > 100
+	if compare.Comparison != "GREATER" {
 		t.Fatalf("A-B vs threshold: got %q, want GREATER", compare.Comparison)
 	}
 	if record.Accounting.DeterministicOps != 2 || record.Accounting.GenerativeCalls != 0 {
 		t.Fatalf("expected 2 deterministic ops and no generative calls, got %+v", record.Accounting)
 	}
-	// every candidate the registry offered for these capabilities is
-	// deterministic
 	for _, step := range record.Steps {
 		for _, candidate := range step.Candidates {
-			if candidate.Descriptor.Engine == tlaloquekit.EngineGenerative {
-				t.Fatalf("step %s unexpectedly had a generative candidate", step.LocalID)
+			if candidate.Kind != tonal.CapabilityTlaloque {
+				t.Fatalf("step %s candidate %s kind=%q, want TLALOQUE", step.LocalID, candidate.WorkerID, candidate.Kind)
 			}
 		}
 	}

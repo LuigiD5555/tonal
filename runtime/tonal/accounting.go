@@ -1,10 +1,9 @@
 package tonal
 
-import "tlaloc.local/behaviorlab/tlaloquekit"
-
-// Accounting is the per-workflow resource picture. TONAL records usage
-// transparently rather than equalising it across arms — the resource
-// difference between arms is part of what T1 measures.
+// Accounting is the per-workflow resource picture. The ParrotCalls field is
+// retained for T1 schema compatibility; in R2 it counts model calls performed
+// by the selected EXTERNAL_MODEL component rather than relying on a worker-id
+// naming convention.
 type Accounting struct {
 	TotalSteps              int   `json:"total_steps"`
 	SuccessfulSteps         int   `json:"successful_steps"`
@@ -27,19 +26,17 @@ func (a *Accounting) recordStep(step StepTrace, ok bool) {
 	if step.LatencyMS > a.MaxStepLatencyMS {
 		a.MaxStepLatencyMS = step.LatencyMS
 	}
-	switch tlaloquekit.EngineKind(step.EngineKind) {
-	case tlaloquekit.EngineGenerative:
+
+	switch step.EngineKind {
+	case "GENERATIVE":
 		a.GenerativeCalls += step.ModelCalls
-		if isParrot(step.SelectedWorker) {
-			a.ParrotCalls += step.ModelCalls
-		}
-	case tlaloquekit.EngineSpecialist:
+	case "SPECIALIST":
 		a.SpecialistOps++
-	case tlaloquekit.EngineDeterministic, tlaloquekit.EngineAlgorithmic:
+	case "DETERMINISTIC", "ALGORITHMIC":
 		a.DeterministicOps++
 	}
-}
 
-func isParrot(workerID string) bool {
-	return len(workerID) >= 6 && workerID[:6] == "parrot"
+	if step.SelectedKind == CapabilityExternalModel {
+		a.ParrotCalls += step.ModelCalls
+	}
 }
