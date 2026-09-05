@@ -220,11 +220,23 @@ func TestRunWorkflow_NonVerifyNodeEmittingFactIsAScopeViolation(t *testing.T) {
 }
 
 func TestRunWorkflow_TerminalOutputKindFollowsVerifyPresence(t *testing.T) {
-	withVerify := TaskFamily{ID: "V", Goal: "g", Steps: []Step{{LocalID: "s", Capability: "VERIFY", Input: InputSpec{Template: map[string]any{}}}}
+	withVerify := TaskFamily{
+		ID:   "V",
+		Goal: "g",
+		Steps: []Step{
+			{LocalID: "s", Capability: "VERIFY", Input: InputSpec{Template: map[string]any{}}},
+		},
+	}
 	if !withVerify.HasVerify() {
 		t.Fatal("HasVerify should be true")
 	}
-	noVerify := TaskFamily{ID: "N", Goal: "g", Steps: []Step{{LocalID: "s", Capability: "COMPARE_NUMBERS", Input: InputSpec{Template: map[string]any{}}}}
+	noVerify := TaskFamily{
+		ID:   "N",
+		Goal: "g",
+		Steps: []Step{
+			{LocalID: "s", Capability: "COMPARE_NUMBERS", Input: InputSpec{Template: map[string]any{}}},
+		},
+	}
 	if noVerify.HasVerify() {
 		t.Fatal("HasVerify should be false")
 	}
@@ -234,7 +246,13 @@ func TestRunWorkflow_UnavailableCapabilityIsAContractFailureNotAPanic(t *testing
 	registry := &fakeRegistry{descriptors: map[string][]CapabilityDescriptor{}, exec: func(CapabilityExecutionRequest) (CapabilityExecutionResult, error) {
 		return CapabilityExecutionResult{}, nil
 	}}
-	family := TaskFamily{ID: "F", Goal: "g", Steps: []Step{{LocalID: "s", Capability: "SUMMARIZE", Input: InputSpec{Template: map[string]any{}}}}}
+	family := TaskFamily{
+		ID:   "F",
+		Goal: "g",
+		Steps: []Step{
+			{LocalID: "s", Capability: "SUMMARIZE", Input: InputSpec{Template: map[string]any{}}},
+		},
+	}
 	record, _, err := (&Engine{Registry: registry}).RunWorkflow(context.Background(), family, Instance{ID: "wf"}, HeterogeneousPolicy{})
 	if err != nil {
 		t.Fatalf("RunWorkflow returned a hard error: %v", err)
