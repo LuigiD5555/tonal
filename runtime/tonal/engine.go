@@ -69,12 +69,16 @@ func (e *Engine) RunWorkflow(ctx context.Context, family TaskFamily, instance In
 	}
 	blackboard := NewBlackboard(instance.ID)
 	record := RunRecord{
-		WorkflowID:        instance.ID,
-		Family:            family.ID,
-		Goal:              family.Goal,
-		Arm:               policy.Name(),
-		DeclaredDepth:     instance.DeclaredDepth,
-		CriticalPathDepth: family.CriticalPathDepth(),
+		WorkflowID:         instance.ID,
+		Family:             family.ID,
+		Goal:               family.Goal,
+		Arm:                policy.Name(),
+		DeclaredDepth:      instance.DeclaredDepth,
+		CriticalPathDepth:  family.CriticalPathDepth(),
+		TerminalOutputKind: "evaluable_terminal_output",
+	}
+	if family.HasVerify() {
+		record.TerminalOutputKind = "promoted_fact"
 	}
 
 	nodeIDByLocal := map[string]string{}
@@ -160,6 +164,15 @@ func (e *Engine) RunWorkflow(ctx context.Context, family TaskFamily, instance In
 			stepTrace.ModelCalls = result.Usage.ModelCalls
 		}
 		for _, obs := range result.Observations {
+			// Fact-promotion scope invariant (protocol section 4): only a
+			// VERIFY Tlaloque may write a FACT. Any other node emitting one
+			// is a hard protocol error.
+			if strings.EqualFold(obs.Kind, "FACT") && !strings.EqualFold(step.Capability, "VERIFY") {
+				stepTrace.Error = "FACT_PROMOTION_SCOPE_VIOLATION: " + step.Capability + " node " + step.LocalID + " emitted a FACT"
+				record.Steps = append(record.Steps, stepTrace)
+				record.Accounting.recordStep(stepTrace, false)
+				return finish(record, blackboard, "CONTRACT_FAILURE", stepTrace.Error), blackboard, nil
+			}
 			blackboard.Append(obs)
 			stepTrace.BlackboardWrites = append(stepTrace.BlackboardWrites, obs.Key)
 			if obs.Key == nodeID || strings.HasSuffix(obs.Key, step.LocalID) {

@@ -209,6 +209,52 @@ func TestRunWorkflow_ParrotCentricArm_ForcesGenerativeForCognitiveCaps(t *testin
 	}
 }
 
+func TestRunWorkflow_NonVerifyNodeEmittingFactIsAScopeViolation(t *testing.T) {
+	registry := &fakeRegistry{
+		descriptors: map[string][]tlaloquekit.Descriptor{
+			"NORMALIZE": {{ID: "normalize-tlaloque", Capability: "NORMALIZE", Engine: tlaloquekit.EngineDeterministic, Deterministic: true}},
+		},
+		exec: func(req tlaloquekit.ExecutionRequest) (tlaloquekit.ExecutionResult, error) {
+			raw, _ := json.Marshal(map[string]any{"trimmed": "7"})
+			return tlaloquekit.ExecutionResult{
+				WorkerID: req.WorkerID, Output: raw,
+				Observations: []tlaloquekit.Observation{{
+					Producer: req.WorkerID, Capability: req.Capability, Key: req.NodeID,
+					Value: raw, Kind: "FACT", Confidence: 1,
+				}},
+			}, nil
+		},
+	}
+	family := TaskFamily{ID: "F", Goal: "g", Steps: []Step{
+		{LocalID: "normalize", Capability: "NORMALIZE", Input: InputSpec{Template: map[string]any{"raw": "7", "target_type": "number"}}},
+	}}
+	record, _, err := (&Engine{Registry: registry}).RunWorkflow(context.Background(), family, Instance{ID: "wf"}, HeterogeneousPolicy{})
+	if err != nil {
+		t.Fatalf("RunWorkflow returned a hard error: %v", err)
+	}
+	if record.FinalStatus != "CONTRACT_FAILURE" || !strings.Contains(record.Error, "FACT_PROMOTION_SCOPE_VIOLATION") {
+		t.Fatalf("status=%q error=%q, want CONTRACT_FAILURE / FACT_PROMOTION_SCOPE_VIOLATION", record.FinalStatus, record.Error)
+	}
+}
+
+func TestRunWorkflow_TerminalOutputKindFollowsVerifyPresence(t *testing.T) {
+	if got := (&Engine{}); got == nil {
+		t.Fatal("unreachable")
+	}
+	withVerify := TaskFamily{ID: "V", Goal: "g", Steps: []Step{
+		{LocalID: "s", Capability: "VERIFY", Input: InputSpec{Template: map[string]any{}}},
+	}}
+	if !withVerify.HasVerify() {
+		t.Fatal("HasVerify should be true")
+	}
+	noVerify := TaskFamily{ID: "N", Goal: "g", Steps: []Step{
+		{LocalID: "s", Capability: "COMPARE_NUMBERS", Input: InputSpec{Template: map[string]any{}}},
+	}}
+	if noVerify.HasVerify() {
+		t.Fatal("HasVerify should be false")
+	}
+}
+
 func TestRunWorkflow_UnavailableCapabilityIsAContractFailureNotAPanic(t *testing.T) {
 	registry := &fakeRegistry{descriptors: map[string][]tlaloquekit.Descriptor{}, exec: func(tlaloquekit.ExecutionRequest) (tlaloquekit.ExecutionResult, error) {
 		return tlaloquekit.ExecutionResult{}, nil

@@ -22,6 +22,12 @@ type RunRecord struct {
 	FinalStatus string                  `json:"final_status"` // OK | UNKNOWN | UNSUPPORTED | CONTRACT_FAILURE | ERROR
 	Error       string                  `json:"error,omitempty"`
 
+	// TerminalOutputKind freezes the Fact semantics (protocol section 4):
+	// a family with a terminal VERIFY yields a "promoted_fact"; a family
+	// without VERIFY (Shapes 1-2) yields an "evaluable_terminal_output"
+	// that the scorer reads directly and that is NOT a Fact.
+	TerminalOutputKind string `json:"terminal_output_kind"`
+
 	Accounting Accounting `json:"accounting"`
 }
 
