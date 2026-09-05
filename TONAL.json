@@ -23,7 +23,7 @@
       "kind": "development_tool",
       "version": "6.0.0-alpha.21",
       "repository": "https://github.com/LuigiD5555/tlaloc.git",
-      "commit": "6ee225a66d65ea9f17f5a041d729a5ef6bb5014f",
+      "commit": "9b8099539e267d2b979c997a7f20ff56bcb86bbf",
       "authority": "behavioral development, bounded Tlaloque swarm experiments, prompt-first distillation, failure-to-regression conversion and target-specific development laboratories",
       "role": "optional development kit",
       "verification": [
@@ -62,8 +62,8 @@
       "A Tonal verification proves the declared composition is reproducible and its configured checks pass. It does not promote Origami semantics, visual profiles or model capabilities.",
       "A Tonal composition references exact commits, never floating branches.",
       "The current composition includes the failure-driven Native semantic regression tooling in Tlaloc alpha.15 and the matching semantic-first T2 correction in Origami alpha.12; this composition does not claim held-out VLM success.",
-      "As of 2026-09-04 the Tlaloc pin is alpha.21 commit 6ee225a (TLALOC_T1_QUALIFIED_EXECUTOR_COMMIT): additive on the frozen Phase P/H baseline 445b18c. It adds tlaloquekit (the public contract, split from tlaloquekit/tlalocregistry which does the internal wiring), the deterministic ARITHMETIC Tlaloque, the R1-aware Parrot Tlaloque (loads and hash-validates CapabilityProfile R1, runs AdapterR1 before at most one model call), and internal/parrotpresent which reproduces the frozen R1/H presentation renderer byte-for-byte. Intermediate commits b22b856 and 3109399 preceded it. CapabilityProfile R1 (hash 8acc959b) is unchanged.",
-      "TONAL T1 introduces a new runtime subsystem under runtime/ (module tonal.local/runtime) that consumes qualified Tlaloques via tlaloc.local/behaviorlab/tlaloquekit. The historical composition/pinning/snapshot/evidence layer at the repository root is unchanged and remains reproducibility infrastructure; the runtime subsystem is the cognitive/computational TONAL authority. See docs/TONAL_SYSTEM_BOUNDARY_R1.md."
+      "The experimental-spine branch repins Tlaloc alpha.21 to exact commit 9b8099539e267d2b979c997a7f20ff56bcb86bbf so TONAL runtime prototypes can consume the public tlaloc.local/behaviorlab/prototypelab projection API. This is an experimental composition pin, not a new Tlaloc release or a promotion claim.",
+      "TONAL T1 introduced a runtime subsystem under runtime/ (module tonal.local/runtime) that consumes qualified Tlaloques via tlaloc.local/behaviorlab/tlaloquekit. On this experimental branch, runtime/experience additionally adapts native TONAL RunRecords into Prototype Lab Episodes while keeping RunRecord as execution authority and requiring explicit experiment evaluation instead of treating execution completion as semantic correctness."
     ]
   },
   "invariants": [
