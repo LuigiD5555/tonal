@@ -103,9 +103,12 @@ func (c ResponseComposer) Compose(ctx context.Context, blackboard *Blackboard, p
 	if blackboard == nil {
 		return RenderedResponse{}, ResponseVerification{}, fmt.Errorf("response composer: Blackboard is required")
 	}
-	if err := validateResponseStyle(plan.Style); err != nil {
+
+	style, err := normalizeResponseStyle(plan.Style)
+	if err != nil {
 		return RenderedResponse{}, ResponseVerification{}, err
 	}
+	plan.Style = style
 
 	grounding, err := responseGrounding(blackboard, plan.GroundingKeys)
 	if err != nil {
@@ -116,7 +119,7 @@ func (c ResponseComposer) Compose(ctx context.Context, blackboard *Blackboard, p
 		SemanticAuthority: "BLACKBOARD_FACTS_ONLY",
 		MayAddClaims:      false,
 		Purpose:           strings.TrimSpace(plan.Purpose),
-		Style:             plan.Style,
+		Style:             style,
 		Grounding:         grounding,
 	}
 	input, err := json.Marshal(envelope)
@@ -157,6 +160,9 @@ func (c ResponseComposer) Compose(ctx context.Context, blackboard *Blackboard, p
 	if strings.TrimSpace(rendered.Text) == "" {
 		return RenderedResponse{}, ResponseVerification{}, fmt.Errorf("response composer: renderer returned empty text")
 	}
+	if len(rendered.UsedKeys) == 0 {
+		return RenderedResponse{}, ResponseVerification{}, fmt.Errorf("response composer: renderer must cite at least one grounding key")
+	}
 	if err := validateUsedKeys(rendered.UsedKeys, grounding); err != nil {
 		return RenderedResponse{}, ResponseVerification{}, err
 	}
@@ -177,23 +183,24 @@ func (c ResponseComposer) Compose(ctx context.Context, blackboard *Blackboard, p
 	return rendered, verification, nil
 }
 
-func validateResponseStyle(style ResponseStyle) error {
-	mode := style.ToneMode
-	if mode == "" {
-		mode = ResponseToneAuto
+func normalizeResponseStyle(style ResponseStyle) (ResponseStyle, error) {
+	if style.ToneMode == "" {
+		style.ToneMode = ResponseToneAuto
 	}
-	switch mode {
+	switch style.ToneMode {
 	case ResponseToneAuto:
-		// AUTO deliberately leaves Tone optional so the pretrained renderer may
-		// choose a natural register. A supplied Tone is ignored by contract.
-		return nil
+		// AUTO deliberately leaves tone selection to the pretrained renderer.
+		// Ignore any stale explicit tone so presentation policy is unambiguous.
+		style.Tone = ""
+		return style, nil
 	case ResponseToneExplicit:
-		if strings.TrimSpace(style.Tone) == "" {
-			return fmt.Errorf("response composer: EXPLICIT tone mode requires a tone")
+		style.Tone = strings.TrimSpace(style.Tone)
+		if style.Tone == "" {
+			return ResponseStyle{}, fmt.Errorf("response composer: EXPLICIT tone mode requires a tone")
 		}
-		return nil
+		return style, nil
 	default:
-		return fmt.Errorf("response composer: unknown tone mode %q", style.ToneMode)
+		return ResponseStyle{}, fmt.Errorf("response composer: unknown tone mode %q", style.ToneMode)
 	}
 }
 
