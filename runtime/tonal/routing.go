@@ -29,20 +29,15 @@ func (HeterogeneousPolicy) SelectWorker(Step, []CapabilityCandidate) (string, st
 	return "", "registry deterministic-first selection (no arm override)"
 }
 
-// ParrotCentricPolicy is Arm B: for capabilities that could plausibly be
-// asked of a generative executor, force a generative candidate instead of the
-// deterministic one. Infrastructure capabilities (locate, crop, verify,
-// store) are left to the Registry. This measures external sequence + memory
-// without heterogeneous specialisation.
+// ParrotCentricPolicy is the frozen Arm B compatibility policy. For the
+// cognitive capabilities declared by T1 it forces the EXTERNAL_MODEL
+// candidate instead of reusable machinery. Infrastructure capabilities are
+// left to the Registry.
 //
-// The policy does not know a Parrot worker id or model name. It selects by the
-// generic generative role published through CapabilityCandidate, so Parrot
-// remains one replaceable capability implementation rather than a privileged
-// runtime path.
+// The policy knows no provider, model name, worker id or prompt. It selects
+// only by Tonal's component Kind. This preserves T1's Parrot-centric arm while
+// keeping Parrot external to the Tlaloque machinery ontology.
 type ParrotCentricPolicy struct {
-	// CognitiveCapabilities is the set forced toward a generative executor,
-	// e.g. NORMALIZE, COMPARE_NUMBERS, ARITHMETIC, SAME_DIFFERENT,
-	// EXTRACT_NUMBER.
 	CognitiveCapabilities map[string]bool
 }
 
@@ -53,9 +48,9 @@ func (p ParrotCentricPolicy) SelectWorker(step Step, candidates []CapabilityCand
 		return "", "infrastructure capability left to the registry"
 	}
 	for _, candidate := range candidates {
-		if candidate.Generative {
-			return candidate.WorkerID, "arm B forces a generative executor for a cognitive capability"
+		if candidate.Kind == CapabilityExternalModel {
+			return candidate.WorkerID, "arm B forces external probabilistic cognition for a cognitive capability"
 		}
 	}
-	return "", "no generative candidate available; falling back to the registry"
+	return "", "no external-model candidate available; falling back to the registry"
 }
