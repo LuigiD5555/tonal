@@ -98,30 +98,19 @@ func (e *Engine) RunWorkflow(ctx context.Context, family TaskFamily, instance In
 			return finish(record, blackboard, "CONTRACT_FAILURE", stepTrace.Error), blackboard, nil
 		}
 
-		workerID, reason := policy.SelectWorker(step, candidates)
-		if workerID == "" {
-			for _, candidate := range candidates {
-				if candidate.Selected {
-					workerID = candidate.WorkerID
-					if reason == "" {
-						reason = candidate.Reason
-					}
-				}
-			}
+		selected, reason, ok := selectCapabilityCandidate(policy, step, candidates)
+		if !ok {
+			stepTrace.Error = "CAPABILITY_SELECTION_FAILURE: " + reason
+			record.Steps = append(record.Steps, stepTrace)
+			record.Accounting.recordStep(stepTrace, false)
+			return finish(record, blackboard, "CONTRACT_FAILURE", stepTrace.Error), blackboard, nil
 		}
-		if workerID == "" {
-			workerID = candidates[0].WorkerID
-			reason = "fell back to first candidate: " + candidates[0].Reason
-		}
-		stepTrace.SelectedWorker = workerID
+		stepTrace.SelectedSource = selected.SourceID
+		stepTrace.SelectedWorker = selected.WorkerID
+		stepTrace.SelectedKind = selected.Kind
 		stepTrace.SelectionReason = reason
-		for _, candidate := range candidates {
-			if candidate.WorkerID == workerID {
-				stepTrace.SelectedKind = candidate.Kind
-				stepTrace.EngineKind = candidate.EngineKind
-				stepTrace.ProfileVersion = candidate.ProfileRef
-			}
-		}
+		stepTrace.EngineKind = selected.EngineKind
+		stepTrace.ProfileVersion = selected.ProfileRef
 
 		input, reads, err := e.buildInput(step, instance, nodeIDByLocal, obsByLocal)
 		if err != nil {
@@ -138,7 +127,8 @@ func (e *Engine) RunWorkflow(ctx context.Context, family TaskFamily, instance In
 			TaskID:            instance.ID,
 			NodeID:            nodeID,
 			Capability:        step.Capability,
-			WorkerID:          workerID,
+			SourceID:          selected.SourceID,
+			WorkerID:          selected.WorkerID,
 			Input:             input,
 			PriorObservations: blackboard.Snapshot(),
 		})
