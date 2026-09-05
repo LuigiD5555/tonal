@@ -2,9 +2,9 @@
 
 **Architecture R2 foundation**
 
-Tonal is an experimental **heterogeneous cognitive/runtime system** for composing bounded, measurable capabilities into verified workflows.
+Tonal is an experimental **heterogeneous cognitive/runtime system** for composing bounded, measurable machinery with selectively invoked external cognition into verified workflows.
 
-The core research question is whether complex, reliable behavior can emerge from external structure, specialization, verification, memory and reusable experience instead of requiring one increasingly complex general-purpose model to perform every operation.
+The core research question is whether complex, reliable behavior can emerge from external structure, specialization, verification, memory and reusable experience while reducing unnecessary dependence on general-purpose model inference.
 
 ## Canonical roles
 
@@ -15,14 +15,14 @@ TONAL
 
 TLALOC
   capability foundry + Behavior Lab
-  build -> test -> qualify -> promote/deprecate
+  builds/qualifies reusable machinery
 
 TLALOQUE
-  one bounded typed measurable capability
+  bounded typed measurable machinery produced/qualified through Tlaloc
 
 PARROT
-  one probabilistic Tlaloque
-  no system-level authority
+  singular external probabilistic cognition interface
+  NOT a Tlaloque; no system-level authority
 
 SHPONGLESE
   semantic operational IR
@@ -31,43 +31,63 @@ ORIGAMI
   optional representation / transport / virtual-memory substrate
 ```
 
-Parrot is useful where probabilistic perception, extraction, interpretation or generation is actually needed. It is **not** Tonal's brain, router, verifier, memory or default executor for every task.
+`Capability` is the common runtime abstraction above these component kinds. Parrot is useful where ambiguity, novelty, perception, interpretation or generation actually needs probabilistic cognition. It is **not** Tonal's brain, router, verifier, memory or default executor.
+
+A provider/model such as a local VLM or remote frontier model is configuration beneath Parrot rather than a new architectural species.
 
 ## Runtime
-
-The T1 runtime introduced the system boundary now promoted by Architecture R2:
 
 ```text
 goal / task family
        ↓
 workflow DAG
        ↓
-qualified capability candidates
+CapabilityRegistry
        ↓
 SelectionPolicy
        ↓
-executor
+Tlaloque / Machine / Tool / Parrot
        ↓
-Blackboard + verification + accounting
+verification
        ↓
-RunRecord / Episode-compatible evidence
+Blackboard commit/reject + accounting
+       ↓
+RunRecord / Episode
 ```
 
-See `runtime/` and `docs/ARCHITECTURE.md`.
+When machinery cannot resolve a state, Tonal may invoke Parrot to produce a probabilistic candidate and then return control to verification and machinery.
+
+## Tlaloc learning direction
+
+Tlaloc may study verified Episodes and ask whether recurring Parrot-assisted behavior can be replaced by cheaper reusable structure:
+
+```text
+Parrot-assisted success
+       ↓
+verified Episodes
+       ↓
+Tlaloc pattern discovery
+       ↓
+candidate Tlaloque / Machine
+       ↓
+holdout + ablation + verification
+       ↓
+promotion or rejection
+```
+
+This is a research target, not yet a demonstrated autonomous learning loop.
 
 ## T1 remains frozen
 
 T1 asks whether heterogeneous composition degrades less with workflow depth than monolithic Parrot or a decomposed-but-Parrot-centric workflow.
 
-Architecture R2 does not retrofit new research ideas into T1. Frozen T1 artifacts and experiment semantics remain authoritative for T1.
+The frozen R1 adapter historically published Parrot through Tlaloc as a generative Tlaloque. Architecture R2 may reclassify that adapter at the Tonal boundary as `EXTERNAL_MODEL`, but does not rewrite T1 artifacts, calls, accounting or experiment semantics.
 
 ## Research program
 
-Post-T1 research is organized around falsifiable mechanisms rather than copying large architectures:
-
 1. **T2 Primitive Swarm / MICRO-ISA** — can a small set of bounded primitives compose into a much larger behavior space?
-2. **T3 Selective / Frugal Compute** — can Tonal activate only the minimum sufficient capabilities?
-3. **T4 Cognitive JIT** — can verified Episodes become cheaper reusable capabilities through Tlaloc?
+2. **T3 Selective / Frugal Compute** — can Tonal activate only the minimum sufficient machinery and invoke Parrot only when needed?
+3. **T4 Cognitive JIT** — can verified Episodes become cheaper reusable Tlaloques/Machines through Tlaloc?
 4. **T5 Shponglese** — can a primitive/motif IR generalize compositionally and remain codec-invariant?
 5. **T6 Origami carrier/memory** — can Origami transport/address the same semantics more effectively than conventional codecs under fair anti-prior controls?
 
@@ -75,49 +95,24 @@ See `docs/RESEARCH_PROGRAM.md` and `docs/research/PAPER_MAP.md`.
 
 ## Historical composition infrastructure
 
-Tonal originally existed primarily as an optional composition, compatibility, provenance and snapshot layer. That machinery remains useful infrastructure and is retained:
-
-```text
-TONAL.json
-tonal.lock
-compatibility.json
-gatekeeper.json
-scripts/fetch-components.sh
-scripts/verify-components.sh
-scripts/build-snapshot.sh
-```
-
-The change in Architecture R2 is one of hierarchy: composition/pinning/provenance are **part of Tonal**, not the complete definition of Tonal.
-
-The exact pre-R2 project boundary is preserved under `docs/archive/superseded-architecture/`.
+Tonal originally existed primarily as an optional composition, compatibility, provenance and snapshot layer. That machinery remains useful infrastructure and is retained (`TONAL.json`, `tonal.lock`, compatibility/gatekeeper state and component-fetch/verification scripts). Composition/pinning/provenance are now **part of Tonal**, not the complete definition of Tonal.
 
 ## Exact component pins
 
-`TONAL.json` and `tonal.lock` remain the machine-readable authority for the exact external component revisions used by a composition or frozen experiment. Do not infer current pins from prose in this README.
+`TONAL.json` and `tonal.lock` remain the machine-readable authority for exact external revisions used by a frozen composition or experiment.
 
 ## Verification
-
-Historical composition verification remains available:
 
 ```bash
 ./scripts/verify-stack.sh
 ```
 
-The runtime Go module is under `runtime/`. It consumes the exact Tlaloc revision materialized by the repository's component-fetch workflow.
+The R2 gate also tests/vets the runtime against the exact Tlaloc revision materialized from `tonal.lock`.
 
 ## Documentation authority
 
-Start with:
-
-1. `CLAUDE.md`
-2. this `README.md`
-3. `docs/CURRENT_STATE.md`
-4. `docs/ARCHITECTURE.md`
-5. `docs/BOUNDARIES.md`
-6. the active experiment specification
-
-Anything under `docs/archive/` is historical and not current architectural authority.
+Start with `CLAUDE.md`, this README, `docs/CURRENT_STATE.md`, `docs/ARCHITECTURE.md`, `docs/BOUNDARIES.md`, then the active experiment specification. Anything under `docs/archive/` is historical.
 
 ## Core invariant
 
-> Prefer the smallest reliable capability that satisfies the required behavior, evidence threshold and resource budget.
+> Use reliable reusable machinery where it is sufficient; spend external probabilistic cognition only where unresolved uncertainty or novelty requires it.
